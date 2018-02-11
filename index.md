@@ -2,6 +2,7 @@
 Learning the Go language by building over simple examples
 
 ### LEVEL 1
+Source Code [/src/level01.go](/src/level01.go)  
 [Find Environment Variables](#find-environment-variables)  
 [Get the variables separately using range](#get-the-variables-separately-using-range)  
 [Get both index and values variables separately](#get-both-index-and-values-variables-separately)  
@@ -14,6 +15,7 @@ Learning the Go language by building over simple examples
 [Parallel run on multiple CPUs](#parallel-run-on-multiple-cpus)  
 
 ### LEVEL 2
+Source Code [/src/level02.go](/src/level02.go)  
 [Fibonacci Using Recursion](#fibonacci-using-recursion)  
 [Fibonacci Using Iteration](#fibonacci-using-iteration)  
 
@@ -31,7 +33,7 @@ Learning the Go language by building over simple examples
       fmt.Println(os.Environ())
     }
 
->learngo $ go run learn.go  
+>$ go run learn.go  
 >[TERM_PROGRAM=vscode VIRTUALENVWRAPPER_SCRIPT=/usr/local/bin/virtualenvwrapper.sh VIRTUALENVWRAPPER_PROJECT_FILENAME=.project TERM...]
 
 **Result:** I got all the variables in a single block. Let me try to separate this out.
@@ -45,7 +47,7 @@ ___
       fmt.Println(e)
     }
 
->learngo $ go run learn.go  
+>$ go run learn.go  
 >0  
 >1  
 
@@ -60,7 +62,7 @@ ___
       fmt.Println(i, e)
     }
 
->learngo $ go run learn.go  
+>$ go run learn.go  
 >0 TERM_PROGRAM=vscode  
 >1 VIRTUALENVWRAPPER_SCRIPT=/usr/local/bin/virtualenvwrapper.sh  
 
@@ -75,7 +77,7 @@ ___
       fmt.Println(e)
     }
 
->learngo $ go run learn.go  
+>$ go run learn.go  
 >TERM_PROGRAM=vscode  
 >VIRTUALENVWRAPPER_SCRIPT=/usr/local/bin/virtualenvwrapper.sh  
 
@@ -91,7 +93,7 @@ ___
       fmt.Println(pair)
     }
 
->learngo $ go run learn.go  
+>$ go run learn.go  
 >[TERM_PROGRAM vscode]  
 >[VIRTUALENVWRAPPER_SCRIPT /usr/local/bin/virtualenvwrapper.sh]  
 
@@ -107,7 +109,7 @@ ___
       fmt.Println(pair[0])
     }
     
->learngo $ go run learn.go  
+>$ go run learn.go  
 >TERM_PROGRAM  
 >VIRTUALENVWRAPPER_SCRIPT  
 
@@ -118,7 +120,7 @@ ___
 ### Call a function
 **Concepts:** function, parameters
 
-    func printenviron(e string) {
+    func printEnviron(e string) {
         time.Sleep(10 * time.Millisecond)
         fmt.Println(e)
     }
@@ -126,11 +128,11 @@ ___
     func main() {
         for _, e := range os.Environ() {
             pair := strings.Split(e, "=")
-            printenviron(pair[0])
+            printEnviron(pair[0])
         }
     }
 
->learngo $ time go run learn.go  
+>$ time go run learn.go  
 >  
 >real    0m0.616s  
 >user    0m0.146s  
@@ -143,7 +145,7 @@ ___
 ### Concurrency
 **Concepts:** go routines, channels
 
-    func printenviron(e string, channel chan string) {
+    func printEnviron(e string, channel chan string) {
         time.Sleep(10 * time.Millisecond)
         fmt.Println(e)
         channel <- e
@@ -153,12 +155,12 @@ ___
         channel := make(chan string)
         for _, e := range os.Environ() {
             pair := strings.Split(e, "=")
-            go printenviron(pair[0], channel)
+            go printEnviron(pair[0], channel)
         }
         fmt.Println(<-channel) //outside the for-loop
     }
 
-learngo $ time go run learn.go  
+$ time go run learn.go  
 >VIRTUALENVWRAPPER_VIRTUALENV  
 >  
 >real    0m0.291s  
@@ -176,12 +178,12 @@ ___
         channel := make(chan string)
         for _, e := range os.Environ() {
             pair := strings.Split(e, "=")
-            go printenviron(pair[0], channel)
+            go printEnviron(pair[0], channel)
             fmt.Println(<-channel) //inside the for-loop
         }
     }
 
-learngo $ time go run learn.go  
+$ time go run learn.go  
 >TERM_PROGRAM 
 >  
 >real    0m0.654s  
@@ -196,18 +198,17 @@ ___
 **Concepts:** runtime, cores
 
     func main() {
-        runtime.
-	PROCS(runtime.NumCPU()) //number of CPUs
+        runtime.GOMAXPROCS(runtime.NumCPU()) //number of CPUs
         
         channel := make(chan string)
         for _, e := range os.Environ() {
             pair := strings.Split(e, "=")
-            go printenviron(pair[0], channel)
+            go printEnviron(pair[0], channel)
             fmt.Println(<-channel)
         }
     }
 
-learngo $ time go run learn.go  
+$ time go run learn.go  
 >TERM_PROGRAM  
 >  
 >real    0m0.646s  
@@ -234,7 +235,7 @@ ___
     	fmt.Println(fibonacciRecursive(50))
     }
 
->learngo $ time go run learn.go  
+>$ time go run learn.go  
 >12586269025  
 
 >real    2m36.339s  
@@ -259,7 +260,7 @@ ___
 	    fmt.Println(fibonacciRecursive(50))
     }
     
->learngo $time go run learn.go  
+>$time go run learn.go  
 >12586269025  
 >  
 >real    0m0.276s  
