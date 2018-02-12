@@ -35,7 +35,10 @@ Source Code [/src/level02.go](/src/level02.go)
 [Fibonacci Using Recursion](#fibonacci-using-recursion)  
 [Fibonacci Using Iteration](#fibonacci-using-iteration)  
 [Passing a function as an argument](#passing-a-function-as-an-argument)  
-[Anonymous Functions](anonymous-functions)  
+[Anonymous Functions](#anonymous-functions)  
+[4 times in a row: Fibonacci Using Iteration](#4-times-in-a-row-fibonacci-using-iteration)  
+[4 times in a row: Fibonacci Using Iteration And Concurrency](#4-times-in-a-row-fibonacci-using-iteration-and-concurrency)  
+[4 times in a row: Fibonacci Using Iteration And Concurrency With Multiple CPUs](#4-times-in-a-row-fibonacci-using-iteration-and-concurrency-with-multiple-cpus)  
 
 ### Find Environment Variables
 **Concepts:** package, imports, main function, printing a line, running a go program.
@@ -379,6 +382,7 @@ ___
 >:  2697763845588227525  
 >:  2697763845588227525  
 >:  4.438340355s  
+
 ___
 
 ### 4 times in a row: Fibonacci Using Iteration And Concurrency With Multiple CPUs
@@ -400,6 +404,15 @@ ___
 >:  2697763845588227525  
 >:  4.429574803s  
 
+___
+
 ### Analysis
-I've annotated the spikes due to the code in red. Notice that the most of the activity is on cores 1 and 3 based on the spikes of green squares. There is barely any action on cores 2 and 4 corresponding to the annotations. 
-![Activity in CPU Cores](/fib_annotated.png)
+I've annotated the spikes due to the code in red. Notice that the most of the activity is on cores 1 and 3 based on the spikes of green squares. There is barely any action on cores 2 and 4 corresponding to the annotations. My theory is that although we set GOMAXPROCS to the number of CPUs, the go scheduler works differently.  
+
+![Activity in CPU Cores](/fib_annotated.png)  
+
+Also see these responses from the FAQ on golang.org:  
+[Why doesn't my multi-goroutine program use multiple CPUs? ¶](https://golang.org/doc/faq#Why_no_multi_CPU)  
+[Why does using GOMAXPROCS > 1 sometimes make my program slower?](https://golang.org/doc/faq#Why_GOMAXPROCS)
+
+___
