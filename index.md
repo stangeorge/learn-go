@@ -1,5 +1,12 @@
 # Learn Go
+**(Work In Progress)**
 Learning the Go language by building over simple examples
+
+To run the source code:
+```
+git clone https://github.com/stangeorge/learn-go.git
+go run learn-go/src/*.go
+```
 
 ### LEVEL 1
 Source Code [/src/level01.go](/src/level01.go)  
@@ -36,7 +43,7 @@ Source Code [/src/level02.go](/src/level02.go)
 >$ go run learn.go  
 >[TERM_PROGRAM=vscode VIRTUALENVWRAPPER_SCRIPT=/usr/local/bin/virtualenvwrapper.sh VIRTUALENVWRAPPER_PROJECT_FILENAME=.project TERM...]
 
-**Result:** I got all the variables in a single block. Let me try to separate this out.
+**Results:** I got all the variables in a single block. Let me try to separate this out.
 
 ___
 
@@ -51,7 +58,7 @@ ___
 >0  
 >1  
 
-**Result:** I got only the index values. Let me get the variables.
+**Results:** I got only the index values. Let me get the variables.
 
 ___
 
@@ -66,7 +73,7 @@ ___
 >0 TERM_PROGRAM=vscode  
 >1 VIRTUALENVWRAPPER_SCRIPT=/usr/local/bin/virtualenvwrapper.sh  
 
-**Result:** I got the index and variables. Let me ignore the index.
+**Results:** I got the index and variables. Let me ignore the index.
 
 ___
 
@@ -81,7 +88,7 @@ ___
 >TERM_PROGRAM=vscode  
 >VIRTUALENVWRAPPER_SCRIPT=/usr/local/bin/virtualenvwrapper.sh  
 
-**Result:**I got the variable-value pair. Let me split them out.
+**Results:**I got the variable-value pair. Let me split them out.
 
 ___
 
@@ -97,7 +104,7 @@ ___
 >[TERM_PROGRAM vscode]  
 >[VIRTUALENVWRAPPER_SCRIPT /usr/local/bin/virtualenvwrapper.sh]  
 
-**Result:** I split the values and got arrays
+**Results:** I split the values and got arrays
 
 ___
 
@@ -113,7 +120,7 @@ ___
 >TERM_PROGRAM  
 >VIRTUALENVWRAPPER_SCRIPT  
 
-**Result:** I got the first element in an array
+**Results:** I got the first element in an array
 
 ___
 
@@ -138,7 +145,7 @@ ___
 >user    0m0.146s  
 >sys     0m0.097s  
 
-**Result:** Called a function in a loop. Let me see if I can reduce the execution time
+**Results:** Called a function in a loop. Let me see if I can reduce the execution time
 
 ___
 
@@ -167,7 +174,7 @@ $ time go run learn.go
 >user    0m0.219s  
 >sys     0m0.103s  
 
-**Result:** Called a method concurrently many times. They communicate with the main thread using channel and pass it the variable name. Real time for this was 0m0.291s vs 0m0.616s if this was called sequentially in a loop. HOWEVER, this does not mean that all the routines finished before the main thread finished.
+**Results:** Called a method concurrently many times. They communicate with the main thread using channel and pass it the variable name. Real time for this was 0m0.291s vs 0m0.616s if this was called sequentially in a loop. HOWEVER, this does not mean that all the routines finished before the main thread finished.
 
 ___
 
@@ -190,7 +197,7 @@ $ time go run learn.go
 >user    0m0.205s  
 >sys     0m0.109s  
 
-**Result:** Moving the `fmt.Println(<-channel)` inside the for-loop makes the main function wait till it gets a response from all the routines. Note that this took around the same 0.654s as the prior sequential run that took 0.616s. Lets see if we can make this run in parallel.
+**Results:** Moving the `fmt.Println(<-channel)` inside the for-loop makes the main function wait till it gets a response from all the routines. Note that this took around the same 0.654s as the prior sequential run that took 0.616s. Lets see if we can make this run in parallel.
 
 ___
 
@@ -215,7 +222,7 @@ $ time go run learn.go
 >user    0m0.206s  
 sys     0m0.109s  
 
-**Results** We set `GOMAXPROCS` to the max CPUs we have. This did not seem to affect the execution time. It was still around 0.646s vs the sequential 0.616s. So no gain in speed yet.
+**Results:** We set `GOMAXPROCS` to the max CPUs we have. This did not seem to affect the execution time. It was still around 0.646s vs the sequential 0.616s. So no gain in speed yet.
 
 ___
 
@@ -242,7 +249,7 @@ ___
 >user    2m31.408s  
 >sys     0m1.105s   
 
-**Results** Recursion in action. However, it takes 2 minutes 36 seconds to find the 50th number in the Fibonacci series. Lets see if there is a faster way.
+**Results:** Recursion in action. However, it takes 2 minutes 36 seconds to find the 50th number in the Fibonacci series. Lets see if there is a faster way.
 
 ___
 
@@ -267,8 +274,32 @@ ___
 >user    0m0.204s  
 >sys     0m0.102s  
     
-**Results** Faster execution. It takes only 276ms vs 2m36s in the recursive version
+**Results:** Faster execution. It takes only 276ms vs 2m36s in the recursive version
 
 ___
 
-###
+### Passing a function as an argument
+**Concepts:** Say I want to find the time taken by the two Fibonacci functions above. I could start and stop the timer before calling each function or I could create a function to do it. `timeTaken(f func(int) int, i int)` takes a function as an argument. The function we pass it takes in an integer hence `func(int)`. It also returns an integer, hence `func(int) int`
+
+    func timeTaken(f func(int) int, i int) {
+        start := time.Now()
+        fmt.Print(": ", f(i))
+        stop := time.Now()
+        fmt.Println(": ", stop.Sub(start))
+    }
+    func main() {
+        fmt.Print("\n* Fibonacci Using Recursion")
+        timeTaken(fibonacciRecursive, 40)
+
+        fmt.Print("\n* Fibonacci Using Iteration")
+        timeTaken(fibonacciIterative, 40)
+    }
+
+>  
+>  * Fibonacci Using Recursion: 102334155:  634.742717ms  
+>  
+>  * Fibonacci Using Iteration: 102334155:  2.036µs  
+
+**Results:** Reusable code using function as a parameter 
+
+___
