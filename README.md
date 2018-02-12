@@ -297,7 +297,7 @@ ___
 ___
 
 ### Passing a function as an argument
-**Concepts:** Say I want to find the time taken by the two Fibonacci functions above. I could start and stop the timer before calling each function or I could create a function to do it. `timeTaken(f func(int) int, i int)` takes a function as an argument. The function we pass it takes in an integer hence `func(int)`. It also returns an integer, hence `func(int) int`
+Say I want to find the time taken by the two Fibonacci functions above. I could start and stop the timer before calling each function or I could create a function to do it. `timeTaken(f func(int) int, i int)` takes a function as an argument. The function we pass it takes in an integer hence `func(int)`. It also returns an integer, hence `func(int) int`
 
     func timeTaken(f func(int) int, i int) {
         start := time.Now()
@@ -318,12 +318,10 @@ ___
 >  
 >  * Fibonacci Using Iteration: 102334155:  2.036µs  
 
-**Results:** Reusable code using function as a parameter 
-
 ___
 
 ### Anonymous Functions
-**Concepts:** I need to run the function 4 times in a eow and print the timing. I won't be reusing this, so I don't really need a new function. So I can use an anonymous function and use it.
+I need to run the function 4 times in a eow and print the timing. I won't be reusing this, so I don't really need a new function. So I can use an anonymous function and use it.
 
     fmt.Print("\n* 4 times in a row: Fibonacci Using Recursion\n")
 	fourTimes := func(n int) int {
@@ -334,14 +332,12 @@ ___
 	}
 	timeTaken(fourTimes, 40)
 
->* 4 times in a row: Fibonacci Using Recursion  
+>&ast; 4 times in a row: Fibonacci Using Recursion  
 >: 102334155:  599.31207ms  
 >: 102334155:  659.258468ms  
 >: 102334155:  631.379041ms  
 >: 102334155:  627.767538ms  
 >: 0:  2.517787938s  
->$    
-**Results:**
 
 ___
 
@@ -357,7 +353,7 @@ ___
 	}
 	timeTaken(fourTimes, n)
 
->* 4 times in a row: Fibonacci Using Iteration  
+>&ast; 4 times in a row: Fibonacci Using Iteration  
 >: 2697763845588227525:  1.099461051s  
 >: 2697763845588227525:  1.102832038s  
 >: 2697763845588227525:  1.12779254s  
@@ -376,7 +372,7 @@ ___
 	stop := time.Now()
 	fmt.Println(": ", stop.Sub(start))
 
->* 4 times in a row: Fibonacci Using Iteration And Concurrency
+>&ast; 4 times in a row: Fibonacci Using Iteration And Concurrency
 >:  2697763845588227525  
 >:  2697763845588227525  
 >:  2697763845588227525  
@@ -397,7 +393,7 @@ ___
 	stop = time.Now()
 	fmt.Println(": ", stop.Sub(start))
 
->* 4 times in a row: Fibonacci Using Iteration And Concurrency With Multiple CPUs:  4  
+>&ast; 4 times in a row: Fibonacci Using Iteration And Concurrency With Multiple CPUs:  4  
 >:  2697763845588227525  
 >:  2697763845588227525  
 >:  2697763845588227525  
