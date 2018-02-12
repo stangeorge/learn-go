@@ -1,12 +1,21 @@
 # Learn Go
-**(Work In Progress)**
-Learning the Go language by building over simple examples
+Learning the Go language by building over simple examples **(Work In Progress)**  
 
-To run the source code:
+### SETUP
+Installing go on macOS
+```
+brew update
+brew upgrade
+brew install go --cross-compile-common
+```
+
+To run the examples here:
 ```
 git clone https://github.com/stangeorge/learn-go.git
 go run learn-go/src/*.go
 ```
+
+Change prompt to just $ using: `export PS1="$ "`
 
 ### LEVEL 1
 Source Code [/src/level01.go](/src/level01.go)  
@@ -26,6 +35,7 @@ Source Code [/src/level02.go](/src/level02.go)
 [Fibonacci Using Recursion](#fibonacci-using-recursion)  
 [Fibonacci Using Iteration](#fibonacci-using-iteration)  
 [Passing a function as an argument](#passing-a-function-as-an-argument)  
+[Anonymous Functions](anonymous-functions)  
 
 ### Find Environment Variables
 **Concepts:** package, imports, main function, printing a line, running a go program.
@@ -232,9 +242,13 @@ ___
 
     func fibonacciRecursive(n int) int {
         switch n {
-        case 0: return 0
-        case 1: fallthrough
-        case 2: return 1
+        case 0:
+            return 0
+        case 1:
+            fallthrough
+        case 2:
+            return 1
+        default:
         default:
             return fibonacciRecursive(n-1) + fibonacciRecursive(n-2)
         }
@@ -304,3 +318,88 @@ ___
 **Results:** Reusable code using function as a parameter 
 
 ___
+
+### Anonymous Functions
+**Concepts:** I need to run the function 4 times in a eow and print the timing. I won't be reusing this, so I don't really need a new function. So I can use an anonymous function and use it.
+
+    fmt.Print("\n* 4 times in a row: Fibonacci Using Recursion\n")
+	fourTimes := func(n int) int {
+		for i := 0; i < 4; i++ {
+			timeTaken(fibonacciRecursive, n)
+		}
+		return 0
+	}
+	timeTaken(fourTimes, 40)
+
+>* 4 times in a row: Fibonacci Using Recursion  
+>: 102334155:  599.31207ms  
+>: 102334155:  659.258468ms  
+>: 102334155:  631.379041ms  
+>: 102334155:  627.767538ms  
+>: 0:  2.517787938s  
+>$    
+**Results:**
+
+___
+
+### 4 times in a row: Fibonacci Using Iteration
+
+    var n int64 = 2000000000
+	fmt.Println("\n* 4 times in a row: Fibonacci Using Iteration")
+	fourTimes := func(n int64) int64 {
+		for i := 0; i < 4; i++ {
+			timeTaken(fibonacciIterative, n)
+		}
+		return 0
+	}
+	timeTaken(fourTimes, n)
+
+>* 4 times in a row: Fibonacci Using Iteration  
+>: 2697763845588227525:  1.099461051s  
+>: 2697763845588227525:  1.102832038s  
+>: 2697763845588227525:  1.12779254s  
+>: 2697763845588227525:  1.137225242s  
+>: 0:  4.467368851s  
+
+___
+
+### 4 times in a row: Fibonacci Using Iteration And Concurrency
+    start := time.Now()
+	c := make(chan int64)
+	for i := 0; i < 4; i++ {
+		go fibonacciIterativeConcurrent(n, c)
+		fmt.Println(": ", <-c)
+	}
+	stop := time.Now()
+	fmt.Println(": ", stop.Sub(start))
+
+>* 4 times in a row: Fibonacci Using Iteration And Concurrency
+>:  2697763845588227525  
+>:  2697763845588227525  
+>:  2697763845588227525  
+>:  2697763845588227525  
+>:  4.438340355s  
+___
+
+### 4 times in a row: Fibonacci Using Iteration And Concurrency With Multiple CPUs
+
+    runtime.GOMAXPROCS(runtime.NumCPU()) //number of CPUs
+	start = time.Now()
+	c = make(chan int64)
+	for i := 0; i < 4; i++ {
+		go fibonacciIterativeConcurrent(n, c)
+		fmt.Println(": ", <-c)
+	}
+	stop = time.Now()
+	fmt.Println(": ", stop.Sub(start))
+
+>* 4 times in a row: Fibonacci Using Iteration And Concurrency With Multiple CPUs:  4  
+>:  2697763845588227525  
+>:  2697763845588227525  
+>:  2697763845588227525  
+>:  2697763845588227525  
+>:  4.429574803s  
+
+### Analysis
+I've annotated the spikes due to the code in red. Notice that the most of the activity is on cores 1 and 3 based on the spikes of green squares. There is barely any action on cores 2 and 4 corresponding to the annotations. 
+![Activity in CPU Cores](/fib_annotated.png)
