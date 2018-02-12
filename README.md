@@ -25,6 +25,7 @@ Source Code [/src/level01.go](/src/level01.go)
 Source Code [/src/level02.go](/src/level02.go)  
 [Fibonacci Using Recursion](#fibonacci-using-recursion)  
 [Fibonacci Using Iteration](#fibonacci-using-iteration)  
+[Passing a function as an argument](#passing-a-function-as-an-argument)  
 
 ### Find Environment Variables
 **Concepts:** package, imports, main function, printing a line, running a go program.
