@@ -321,7 +321,7 @@ Say I want to find the time taken by the two Fibonacci functions above. I could 
 ___
 
 ### Anonymous Functions
-I need to run the function 4 times in a eow and print the timing. I won't be reusing this, so I don't really need a new function. So I can use an anonymous function and use it.
+I need to run the function 4 times in a row and print the timing. I won't be reusing this, so I don't really need a new function. So I can create an anonymous function and use it.
 
     fmt.Print("\n* 4 times in a row: Fibonacci Using Recursion\n")
 	fourTimes := func(n int) int {
@@ -332,7 +332,7 @@ I need to run the function 4 times in a eow and print the timing. I won't be reu
 	}
 	timeTaken(fourTimes, 40)
 
->&ast; 4 times in a row: Fibonacci Using Recursion  
+> * 4 times in a row: Fibonacci Using Recursion  
 >: 102334155:  599.31207ms  
 >: 102334155:  659.258468ms  
 >: 102334155:  631.379041ms  
@@ -353,7 +353,7 @@ ___
 	}
 	timeTaken(fourTimes, n)
 
->&ast; 4 times in a row: Fibonacci Using Iteration  
+> * 4 times in a row: Fibonacci Using Iteration  
 >: 2697763845588227525:  1.099461051s  
 >: 2697763845588227525:  1.102832038s  
 >: 2697763845588227525:  1.12779254s  
@@ -372,7 +372,7 @@ ___
 	stop := time.Now()
 	fmt.Println(": ", stop.Sub(start))
 
->&ast; 4 times in a row: Fibonacci Using Iteration And Concurrency
+> * 4 times in a row: Fibonacci Using Iteration And Concurrency
 >:  2697763845588227525  
 >:  2697763845588227525  
 >:  2697763845588227525  
