@@ -393,7 +393,7 @@ ___
 	stop = time.Now()
 	fmt.Println(": ", stop.Sub(start))
 
->&ast; 4 times in a row: Fibonacci Using Iteration And Concurrency With Multiple CPUs:  4  
+> * 4 times in a row: Fibonacci Using Iteration And Concurrency With Multiple CPUs:  4  
 >:  2697763845588227525  
 >:  2697763845588227525  
 >:  2697763845588227525  
@@ -410,5 +410,74 @@ I've annotated the spikes due to the code in red. Notice that the most of the ac
 Also see these responses from the FAQ on golang.org:  
 [Why doesn't my multi-goroutine program use multiple CPUs? ¶](https://golang.org/doc/faq#Why_no_multi_CPU)  
 [Why does using GOMAXPROCS > 1 sometimes make my program slower?](https://golang.org/doc/faq#Why_GOMAXPROCS)
+
+___
+
+### LEVEL 3
+Source Code [/src/level02.go](/src/level03.go)  
+[Sorting Setup](#sorting-setup)  
+[Selection Sort](#selection-sort)  
+
+### Sorting Setup
+I created 2 arrays. "n" has numbers from 1 to 50,000 in sorted order. "r" has the numbers reverse sorted. I have a function `sortTime` to measure the time taken
+
+    func main() {
+        const Max = 50000
+        var n, r [Max]int
+        for i := 0; i < Max; i++ {
+            n[i] = i + 1
+        }
+
+        for i := 0; i < Max; i++ {
+            r[i] = Max - i
+        }
+    }
+
+    func sortTime(f func([]int), n []int) {
+        // fmt.Println("\nn", n)
+        fmt.Printf("(%d)", len(n))
+        start := time.Now()
+        f(n)
+        stop := time.Now()
+        // fmt.Println("\nn", n)
+        fmt.Println(": ", stop.Sub(start))
+    }
+
+___
+
+### Selection Sort
+
+    func selectionSort(n []int) {
+        for i := 0; i < len(n); i++ {
+            min_j, min := i, n[i]
+            for j := i; j < len(n); j++ {
+                if n[j] < min {
+                    min_j, min = j, n[j]
+                }
+            }
+            n[i], n[min_j] = n[min_j], n[i]
+        }
+    }
+    
+    func main() {
+        fmt.Print("\n* Selection Sort - Sorted List")
+        sortTime(selectionSort, n[:])
+        fmt.Print("\n* Selection Sort - Reverse Sorted List")
+        sortTime(selectionSort, r[:])
+    }
+
+Output with 50,000 numbers
+> * Selection Sort - Sorted List:  1.907869346s  
+> * Selection Sort - Reverse Sorted List:  1.675308716s  
+
+Output with 10 numbers
+> * Selection Sort - Sorted List(10):  1.03µs  
+> * Selection Sort - Reverse Sorted List(10):  778ns  
+
+Oddly, the sorted list takes longer than the reverse sorted list. I tried to add a check to avoid unnecessary swaps but that did not help either:
+
+    if (min_j != i) {
+        n[i], n[min_j] = n[min_j], n[i]
+    }
 
 ___
