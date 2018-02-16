@@ -414,9 +414,10 @@ Also see these responses from the FAQ on golang.org:
 ___
 
 ### LEVEL 3
-Source Code [/src/level02.go](/src/level03.go)  
+Source Code [/src/level03.go](/src/level03.go)  
 [Sorting Setup](#sorting-setup)  
 [Selection Sort](#selection-sort)  
+[Bubble Sort](#bubble-sort)  
 
 ### Sorting Setup
 I created 2 arrays. "n" has numbers from 1 to 50,000 in sorted order. "r" has the numbers reverse sorted. I have a function `sortTime` to measure the time taken
@@ -434,18 +435,17 @@ I created 2 arrays. "n" has numbers from 1 to 50,000 in sorted order. "r" has th
     }
 
     func sortTime(f func([]int), n []int) {
-        // fmt.Println("\nn", n)
         fmt.Printf("(%d)", len(n))
         start := time.Now()
         f(n)
         stop := time.Now()
-        // fmt.Println("\nn", n)
         fmt.Println(": ", stop.Sub(start))
     }
 
 ___
 
 ### Selection Sort
+Algorithm: [https://en.wikipedia.org/wiki/Selection_sort](https://en.wikipedia.org/wiki/Selection_sort)
 
     func selectionSort(n []int) {
         for i := 0; i < len(n); i++ {
@@ -467,8 +467,8 @@ ___
     }
 
 Output with 50,000 numbers
-> * Selection Sort - Sorted List:  1.907869346s  
-> * Selection Sort - Reverse Sorted List:  1.675308716s  
+> * Selection Sort - Sorted List(50000):  1.907869346s  
+> * Selection Sort - Reverse Sorted List(50000):  1.675308716s  
 
 Output with 10 numbers
 > * Selection Sort - Sorted List(10):  1.03µs  
@@ -481,3 +481,25 @@ Oddly, the sorted list takes longer than the reverse sorted list. I tried to add
     }
 
 ___
+
+### Bubble Sort
+Algorithm: [https://en.wikipedia.org/wiki/Bubble_sort](https://en.wikipedia.org/wiki/Bubble_sort)
+
+    func bubbleSort(n []int) {
+        swapped := true
+        for swapped {
+            swapped = false
+            for i := 0; i < len(n)-1; i++ {
+                if n[i] > n[i+1] {
+                    swapped = true
+                    n[i], n[i+1] = n[i+1], n[i]
+                }
+            }
+        }
+    }
+
+> * Bubble Sort - Sorted List(50000):  48.053µs  
+> * Bubble Sort - Reverse Sorted List(50000):  3.503427095s  
+
+___
+

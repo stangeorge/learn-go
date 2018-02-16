@@ -2,26 +2,30 @@ package main
 
 import (
 	"fmt"
+	"reflect"
+	"runtime"
 	"time"
 )
 
 func level03() {
-	const Max = 10
+	const Max = 50000
 	var n, r [Max]int
-	for i := 0; i < Max; i++ {
-		n[i] = i + 1
-	}
-	// fmt.Println("\nn", n)
+	sorts := []func([]int){selectionSort, bubbleSort}
+	for _, s := range sorts {
+		name := runtime.FuncForPC(reflect.ValueOf(s).Pointer()).Name()
 
-	for i := 0; i < Max; i++ {
-		r[i] = Max - i
-	}
-	// fmt.Println("\nr", r)
+		fmt.Printf("* %20s - Sorted  Ascending", name)
+		for i := 0; i < Max; i++ {
+			n[i] = i + 1
+		}
+		sortTime(s, n[:])
 
-	fmt.Print("\n* Selection Sort - Sorted List")
-	sortTime(selectionSort, n[:])
-	fmt.Print("\n* Selection Sort - Reverse Sorted List")
-	sortTime(selectionSort, r[:])
+		fmt.Printf("* %20s - Sorted Descending", name)
+		for i := 0; i < Max; i++ {
+			r[i] = Max - i
+		}
+		sortTime(s, r[:])
+	}
 }
 
 func sortTime(f func([]int), n []int) {
@@ -44,6 +48,19 @@ func selectionSort(n []int) {
 		}
 		if min_j != i {
 			n[i], n[min_j] = n[min_j], n[i]
+		}
+	}
+}
+
+func bubbleSort(n []int) {
+	swapped := true
+	for swapped {
+		swapped = false
+		for i := 0; i < len(n)-1; i++ {
+			if n[i] > n[i+1] {
+				swapped = true
+				n[i], n[i+1] = n[i+1], n[i]
+			}
 		}
 	}
 }
