@@ -1,26 +1,34 @@
 package main
 
 import (
-	"fmt"
+	"bytes"
+	"log"
+	"os"
 	"reflect"
 	"runtime"
 	"time"
 )
 
+var (
+	buf    bytes.Buffer
+	logger = log.New(&buf, "logger: ", log.Ldate|log.Ltime|log.Lshortfile)
+)
+
 func level03() {
+	logger.SetOutput(os.Stdout)
 	const Max = 50000
 	var n, r [Max]int
-	sorts := []func([]int){selectionSort, bubbleSort}
+	sorts := []func([]int){selectionSort, bubbleSort, insertionSort}
 	for _, s := range sorts {
 		name := runtime.FuncForPC(reflect.ValueOf(s).Pointer()).Name()
 
-		fmt.Printf("* %20s - Sorted  Ascending", name)
+		logger.Printf("* %20s - Sorted  Ascending", name)
 		for i := 0; i < Max; i++ {
 			n[i] = i + 1
 		}
 		sortTime(s, n[:])
 
-		fmt.Printf("* %20s - Sorted Descending", name)
+		logger.Printf("* %20s - Sorted Descending", name)
 		for i := 0; i < Max; i++ {
 			r[i] = Max - i
 		}
@@ -29,13 +37,12 @@ func level03() {
 }
 
 func sortTime(f func([]int), n []int) {
-	// fmt.Println("\nn", n)
-	fmt.Printf("(%d)", len(n))
+	// logger.Printf("(%d) %v BEFORE", len(n), n)
 	start := time.Now()
 	f(n)
 	stop := time.Now()
-	// fmt.Println("\nn", n)
-	fmt.Println(": ", stop.Sub(start))
+	// logger.Printf("(%d) %v AFTER", len(n), n)
+	logger.Println("Time to sort: ", stop.Sub(start))
 }
 
 func selectionSort(n []int) {
@@ -60,6 +67,21 @@ func bubbleSort(n []int) {
 			if n[i] > n[i+1] {
 				swapped = true
 				n[i], n[i+1] = n[i+1], n[i]
+			}
+		}
+	}
+}
+
+func insertionSort(n []int) {
+	for i := 0; i < len(n)-1; i++ {
+		if n[i+1] < n[i] {
+			for j := i + 1; j < len(n)-1; j++ {
+				if n[j] < n[j-1] {
+					n[j-1], n[j] = n[j], n[j-1]
+					// logger.Printf("i=%d, j=%d, n[i]=%d, n[j]=%d\n",
+					// 	i, j, n[i], n[j])
+					break
+				}
 			}
 		}
 	}

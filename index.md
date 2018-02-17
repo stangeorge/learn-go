@@ -40,6 +40,16 @@ Source Code [/src/level02.go](/src/level02.go)
 [4 times in a row: Fibonacci Using Iteration And Concurrency](#4-times-in-a-row-fibonacci-using-iteration-and-concurrency)  
 [4 times in a row: Fibonacci Using Iteration And Concurrency With Multiple CPUs](#4-times-in-a-row-fibonacci-using-iteration-and-concurrency-with-multiple-cpus)  
 
+### LEVEL 3
+Source Code [/src/level03.go](/src/level03.go)  
+[Sorting Setup](#sorting-setup)  
+[Selection Sort](#selection-sort)  
+[Bubble Sort](#bubble-sort)  
+[Insertion Sort](#insertion-sort)  
+[Passing an array of functions as parameter](#passing-an-array-of-functions-as-parameter)  
+[Reflection](#reflection)  
+[Logging](#logging)  
+
 ### Find Environment Variables
 **Concepts:** package, imports, main function, printing a line, running a go program.
 
@@ -414,10 +424,6 @@ Also see these responses from the FAQ on golang.org:
 ___
 
 ### LEVEL 3
-Source Code [/src/level03.go](/src/level03.go)  
-[Sorting Setup](#sorting-setup)  
-[Selection Sort](#selection-sort)  
-[Bubble Sort](#bubble-sort)  
 
 ### Sorting Setup
 I created 2 arrays. "n" has numbers from 1 to 50,000 in sorted order. "r" has the numbers reverse sorted. I have a function `sortTime` to measure the time taken
@@ -435,11 +441,10 @@ I created 2 arrays. "n" has numbers from 1 to 50,000 in sorted order. "r" has th
     }
 
     func sortTime(f func([]int), n []int) {
-        fmt.Printf("(%d)", len(n))
         start := time.Now()
         f(n)
         stop := time.Now()
-        fmt.Println(": ", stop.Sub(start))
+        fmt.Println("Time to sort: ", stop.Sub(start))
     }
 
 ___
@@ -502,4 +507,81 @@ Algorithm: [https://en.wikipedia.org/wiki/Bubble_sort](https://en.wikipedia.org/
 > * Bubble Sort - Reverse Sorted List(50000):  3.503427095s  
 
 ___
+
+### Insertion Sort
+Algorithm: [https://en.wikipedia.org/wiki/Insertion_sort](https://en.wikipedia.org/wiki/Insertion_sort)
+
+    func insertionSort(n []int) {
+        for i := 0; i < len(n)-1; i++ {
+            if n[i+1] < n[i] {
+                for j := i + 1; j < len(n)-1; j++ {
+                    if n[j] < n[j-1] {
+                        n[j-1], n[j] = n[j], n[j-1]
+                        break
+                    }
+                }
+            }
+        }
+    }
+
+> * Insertion Sort - Sorted List(50000):  53.593µs  
+> * Insertion Sort - Reverse Sorted List(50000):  125.701µs  
+
+___
+
+### Passing an array of functions as parameter
+Writing the block to record the start and stop times for each algorithm becomes repetitive. Instead, we can pass in all our functions and have them timed. This is similar to [Passing a function as an argument](#passing-a-function-as-an-argument)  but here we passinf in an array of functions. That way, we can simply add any new sorting algorithm to the array and it will print the timings
+
+    func sortTime(f func([]int), n []int) {
+        start := time.Now()
+        f(n)
+        stop := time.Now()
+        fmt.Println("Time to sort: ", stop.Sub(start))
+    }
+    func main () {
+        const Max = 50000
+	    var n, r [Max]int
+		for i := 0; i < Max; i++ {
+			r[i] = Max - i
+		}
+        sorts := []func([]int){selectionSort, bubbleSort, insertionSort}
+	    for _, s := range sorts {
+            sortTime(s, r[:])
+        }
+    }
+
+___
+
+### Reflection
+When we pass in the functions as parameters, we can use reflection to find the name of the function
+    sorts := []func([]int){selectionSort, bubbleSort, insertionSort}
+	for _, s := range sorts {
+		name := runtime.FuncForPC(reflect.ValueOf(s).Pointer()).Name()
+		logger.Println(name)
+    }
+
+> main.selectionSort  
+> main.bubbleSort  
+> main.insertionSort  
+
+___
+
+### Logging
+We can replace our `fmt.Printf` statements with `logger.Printf` and redirect the output back to the console. It prints the date, time, file name, line number etc.
+
+    var (
+        buf    bytes.Buffer
+        logger = log.New(&buf, "logger: ", log.Ldate|log.Ltime|log.Lshortfile)
+    )
+    
+    func main() {
+        logger.SetOutput(os.Stdout)
+    }
+
+> logger: 2018/02/17 11:23:58 level03.go:25: *   main.selectionSort - Sorted  Ascending  
+> logger: 2018/02/17 11:23:59 level03.go:45: Time to sort:  1.804838585s  
+
+___
+
+
 
