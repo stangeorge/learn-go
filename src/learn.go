@@ -1,12 +1,22 @@
 package main
 
-import "fmt"
+import (
+	"bytes"
+	"log"
+	"os"
+)
+
+var (
+	buf    bytes.Buffer
+	logger = log.New(&buf, "logger: ", log.Ldate|log.Ltime|log.Lshortfile)
+)
 
 func main() {
-	fmt.Println("* LEVEL 1")
+	logger.SetOutput(os.Stdout)
+	logger.Println("* LEVEL 1")
 	// level01()
-	fmt.Println("* LEVEL 2")
+	logger.Println("* LEVEL 2")
 	// level02()
-	fmt.Println("* LEVEL 3")
+	logger.Println("* LEVEL 3")
 	level03()
 }

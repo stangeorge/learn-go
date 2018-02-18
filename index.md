@@ -1,7 +1,7 @@
 # Learn Go
 Learning the Go language by building over simple examples **(Work In Progress)**  
 
-### SETUP
+## SETUP
 Installing go on macOS
 ```
 brew update
@@ -16,6 +16,10 @@ go run learn-go/src/*.go
 ```
 
 Change prompt to just $ using: `export PS1="$ "`
+
+---
+## Table of Contents
+---
 
 ### LEVEL 1
 Source Code [/src/level01.go](/src/level01.go)  
@@ -50,6 +54,13 @@ Source Code [/src/level03.go](/src/level03.go)
 [Reflection](#reflection)  
 [Logging](#logging)  
 
+### LEVEL 4
+Source Code [/src/level03_test.go](/src/level03_test.go)  
+[Unit Testing](#unit-testing)
+
+---
+## LEVEL 1
+---
 ### Find Environment Variables
 **Concepts:** package, imports, main function, printing a line, running a go program.
 
@@ -69,7 +80,7 @@ Source Code [/src/level03.go](/src/level03.go)
 
 **Results:** I got all the variables in a single block. Let me try to separate this out.
 
-___
+---
 
 ### Get the variables separately using range
 **Concepts:** creating an initializing a variable, for-loop, range
@@ -84,7 +95,7 @@ ___
 
 **Results:** I got only the index values. Let me get the variables.
 
-___
+---
 
 ### Get both index and values variables separately
 **Concepts:** indexes and values in a for-loop
@@ -99,7 +110,7 @@ ___
 
 **Results:** I got the index and variables. Let me ignore the index.
 
-___
+---
 
 ### Ignore index using underscore
 **Concepts:** underscore
@@ -114,7 +125,7 @@ ___
 
 **Results:**I got the variable-value pair. Let me split them out.
 
-___
+---
 
 ### Split the values
 **Concepts:** strings.Split(), array
@@ -130,7 +141,7 @@ ___
 
 **Results:** I split the values and got arrays
 
-___
+---
 
 ### Get only the environment variable names
 **Concepts:** array
@@ -146,7 +157,7 @@ ___
 
 **Results:** I got the first element in an array
 
-___
+---
 
 ### Call a function
 **Concepts:** function, parameters
@@ -171,7 +182,7 @@ ___
 
 **Results:** Called a function in a loop. Let me see if I can reduce the execution time
 
-___
+---
 
 ### Concurrency
 **Concepts:** go routines, channels
@@ -200,7 +211,7 @@ $ time go run learn.go
 
 **Results:** Called a method concurrently many times. They communicate with the main thread using channel and pass it the variable name. Real time for this was 0m0.291s vs 0m0.616s if this was called sequentially in a loop. HOWEVER, this does not mean that all the routines finished before the main thread finished.
 
-___
+---
 
 ### Have the routines finish before main
 **Concepts:** go routines, channels
@@ -223,7 +234,7 @@ $ time go run learn.go
 
 **Results:** Moving the `fmt.Println(<-channel)` inside the for-loop makes the main function wait till it gets a response from all the routines. Note that this took around the same 0.654s as the prior sequential run that took 0.616s. Lets see if we can make this run in parallel.
 
-___
+---
 
 ### Parallel run on multiple CPUs
 **Concepts:** runtime, cores
@@ -248,8 +259,9 @@ sys     0m0.109s
 
 **Results:** We set `GOMAXPROCS` to the max CPUs we have. This did not seem to affect the execution time. It was still around 0.646s vs the sequential 0.616s. So no gain in speed yet.
 
-___
-
+---
+## LEVEL 2
+---
 ### Fibonacci Using Recursion
 **Concepts:** Recursion, switch-case.
 
@@ -279,7 +291,7 @@ ___
 
 **Results:** Recursion in action. However, it takes 2 minutes 36 seconds to find the 50th number in the Fibonacci series. Lets see if there is a faster way.
 
-___
+---
 
 ### Fibonacci Using Iteration
 **Concepts:** for-loop
@@ -304,7 +316,7 @@ ___
     
 **Results:** Faster execution. It takes only 276ms vs 2m36s in the recursive version
 
-___
+---
 
 ### Passing a function as an argument
 Say I want to find the time taken by the two Fibonacci functions above. I could start and stop the timer before calling each function or I could create a function to do it. `timeTaken(f func(int) int, i int)` takes a function as an argument. The function we pass it takes in an integer hence `func(int)`. It also returns an integer, hence `func(int) int`
@@ -328,7 +340,7 @@ Say I want to find the time taken by the two Fibonacci functions above. I could 
 >  
 >  * Fibonacci Using Iteration: 102334155:  2.036µs  
 
-___
+---
 
 ### Anonymous Functions
 I need to run the function 4 times in a row and print the timing. I won't be reusing this, so I don't really need a new function. So I can create an anonymous function and use it.
@@ -349,7 +361,7 @@ I need to run the function 4 times in a row and print the timing. I won't be reu
 >: 102334155:  627.767538ms  
 >: 0:  2.517787938s  
 
-___
+---
 
 ### 4 times in a row: Fibonacci Using Iteration
 
@@ -370,7 +382,7 @@ ___
 >: 2697763845588227525:  1.137225242s  
 >: 0:  4.467368851s  
 
-___
+---
 
 ### 4 times in a row: Fibonacci Using Iteration And Concurrency
     start := time.Now()
@@ -389,7 +401,7 @@ ___
 >:  2697763845588227525  
 >:  4.438340355s  
 
-___
+---
 
 ### 4 times in a row: Fibonacci Using Iteration And Concurrency With Multiple CPUs
 
@@ -410,7 +422,7 @@ ___
 >:  2697763845588227525  
 >:  4.429574803s  
 
-___
+---
 
 ### Analysis
 I've annotated the spikes due to the code in red. Notice that the most of the activity is on cores 1 and 3 based on the spikes of green squares. There is barely any action on cores 2 and 4 corresponding to the annotations. My theory is that although we set GOMAXPROCS to the number of CPUs, the go scheduler works differently.  
@@ -421,9 +433,9 @@ Also see these responses from the FAQ on golang.org:
 [Why doesn't my multi-goroutine program use multiple CPUs? ¶](https://golang.org/doc/faq#Why_no_multi_CPU)  
 [Why does using GOMAXPROCS > 1 sometimes make my program slower?](https://golang.org/doc/faq#Why_GOMAXPROCS)
 
-___
-
-### LEVEL 3
+---
+## LEVEL 3
+---
 
 ### Sorting Setup
 I created 2 arrays. "n" has numbers from 1 to 50,000 in sorted order. "r" has the numbers reverse sorted. I have a function `sortTime` to measure the time taken
@@ -447,7 +459,7 @@ I created 2 arrays. "n" has numbers from 1 to 50,000 in sorted order. "r" has th
         fmt.Println("Time to sort: ", stop.Sub(start))
     }
 
-___
+---
 
 ### Selection Sort
 Algorithm: [https://en.wikipedia.org/wiki/Selection_sort](https://en.wikipedia.org/wiki/Selection_sort)
@@ -485,7 +497,7 @@ Oddly, the sorted list takes longer than the reverse sorted list. I tried to add
         n[i], n[min_j] = n[min_j], n[i]
     }
 
-___
+---
 
 ### Bubble Sort
 Algorithm: [https://en.wikipedia.org/wiki/Bubble_sort](https://en.wikipedia.org/wiki/Bubble_sort)
@@ -506,7 +518,7 @@ Algorithm: [https://en.wikipedia.org/wiki/Bubble_sort](https://en.wikipedia.org/
 > * Bubble Sort - Sorted List(50000):  48.053µs  
 > * Bubble Sort - Reverse Sorted List(50000):  3.503427095s  
 
-___
+---
 
 ### Insertion Sort
 Algorithm: [https://en.wikipedia.org/wiki/Insertion_sort](https://en.wikipedia.org/wiki/Insertion_sort)
@@ -527,10 +539,10 @@ Algorithm: [https://en.wikipedia.org/wiki/Insertion_sort](https://en.wikipedia.o
 > * Insertion Sort - Sorted List(50000):  53.593µs  
 > * Insertion Sort - Reverse Sorted List(50000):  125.701µs  
 
-___
+---
 
 ### Passing an array of functions as parameter
-Writing the block to record the start and stop times for each algorithm becomes repetitive. Instead, we can pass in all our functions and have them timed. This is similar to [Passing a function as an argument](#passing-a-function-as-an-argument)  but here we passinf in an array of functions. That way, we can simply add any new sorting algorithm to the array and it will print the timings
+Writing the block to record the start and stop times for each algorithm becomes repetitive. Instead, we can pass in all our functions and have them timed. This is similar to [Passing a function as an argument](#passing-a-function-as-an-argument)  but here we pass in an array of functions. That way, we can simply add any new sorting algorithm to the array and it will print the timings
 
     func sortTime(f func([]int), n []int) {
         start := time.Now()
@@ -550,10 +562,11 @@ Writing the block to record the start and stop times for each algorithm becomes 
         }
     }
 
-___
+---
 
 ### Reflection
 When we pass in the functions as parameters, we can use reflection to find the name of the function
+
     sorts := []func([]int){selectionSort, bubbleSort, insertionSort}
 	for _, s := range sorts {
 		name := runtime.FuncForPC(reflect.ValueOf(s).Pointer()).Name()
@@ -564,7 +577,7 @@ When we pass in the functions as parameters, we can use reflection to find the n
 > main.bubbleSort  
 > main.insertionSort  
 
-___
+---
 
 ### Logging
 We can replace our `fmt.Printf` statements with `logger.Printf` and redirect the output back to the console. It prints the date, time, file name, line number etc.
@@ -581,7 +594,50 @@ We can replace our `fmt.Printf` statements with `logger.Printf` and redirect the
 > logger: 2018/02/17 11:23:58 level03.go:25: *   main.selectionSort - Sorted  Ascending  
 > logger: 2018/02/17 11:23:59 level03.go:45: Time to sort:  1.804838585s  
 
-___
+---
+## LEVEL 4
 
+Source Code [/src/level03_test.go](/src/level03_test.go)
 
+---
 
+###Unit Testing (Success)  
+To add unit tests to our sorting algorithms, I `import testing` in a filename that ends with `_test.go`. It stays in the same directory as our source files and run it using `go test -cover src/*`.
+I passed all the algorithm functions as an array. Note the main `func TestSorting(t *testing.T)` as well as the subsequent `t.Run("Reverse Sorted List", func(t *testing.T)` under it. I've shown how you test the list that is sorted in the descending order. See the source code to see another similar call.
+
+    var sorts = []func([]int){selectionSort, bubbleSort, insertionSort}
+
+    func TestSorting(t *testing.T) {
+        for _, sort := range sorts {
+            name := runtime.FuncForPC(reflect.ValueOf(sort).Pointer()).Name()
+            t.Run("Reverse Sorted List", func(t *testing.T) {
+                sort(r[:])
+                if r != sorted {
+                    t.Errorf("%s failed to sort a reverse sorted list", name)
+                }
+            })
+        }
+    }
+
+>$ time go test -cover src/*  
+>ok      command-line-arguments  9.536s  coverage: 16.5% of statements  
+>  
+>real    0m10.008s  
+>user    0m9.753s  
+>sys     0m0.261s  
+>$  
+
+A failure message will show up like this:
+
+>$ time go test -cover src/*  
+>--- FAIL: TestSorting (9.61s)  
+>    --- FAIL: TestSorting/Reverse_Sorted_List#02 (1.80s)  
+>        level03_test.go:54: command-line-arguments.insertionSort failed to sort a reverse sorted list  
+>FAIL  
+>coverage: 15.9% of statements  
+>FAIL    command-line-arguments  9.621s  
+>  
+>real    0m10.195s  
+>user    0m9.789s  
+>sys     0m0.285s  
+$  

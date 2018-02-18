@@ -1,21 +1,12 @@
 package main
 
 import (
-	"bytes"
-	"log"
-	"os"
 	"reflect"
 	"runtime"
 	"time"
 )
 
-var (
-	buf    bytes.Buffer
-	logger = log.New(&buf, "logger: ", log.Ldate|log.Ltime|log.Lshortfile)
-)
-
 func level03() {
-	logger.SetOutput(os.Stdout)
 	const Max = 50000
 	var n, r [Max]int
 	sorts := []func([]int){selectionSort, bubbleSort, insertionSort}
@@ -75,14 +66,16 @@ func bubbleSort(n []int) {
 func insertionSort(n []int) {
 	for i := 0; i < len(n)-1; i++ {
 		if n[i+1] < n[i] {
-			for j := i + 1; j < len(n)-1; j++ {
-				if n[j] < n[j-1] {
-					n[j-1], n[j] = n[j], n[j-1]
-					// logger.Printf("i=%d, j=%d, n[i]=%d, n[j]=%d\n",
-					// 	i, j, n[i], n[j])
-					break
+			value := n[i+1]
+			var j int
+			for j = i; j >= 0; j-- {
+				if n[j] > value {
+					n[j+1] = n[j]
+					// logger.Printf("i=%d, j=%d, n[i]=%d, n[j]=%d, n=%v\n",
+					// i, j, n[i], n[j], n)
 				}
 			}
+			n[j+1] = value
 		}
 	}
 }
