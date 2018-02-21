@@ -67,7 +67,8 @@ Source Code [/src/level03.go](/src/level03.go)\
 
 Source Code [/src/level03_test.go](/src/level03_test.go)\
 [Unit Testing](#unit-testing)\
-[Benchmarks](#benchmarks)
+[Benchmarks](#benchmarks)\
+[Trace](#trace)
 
 ---
 
@@ -347,6 +348,7 @@ func fibonacciRecursive(n int) int {
         return fibonacciRecursive(n-1) + fibonacciRecursive(n-2)
     }
 }
+
 func main() {
     fmt.Println(fibonacciRecursive(50))
 }
@@ -377,6 +379,7 @@ func fibonacciIterative(n int) int {
     }
     return y
 }
+
 func main() {
     fmt.Println(fibonacciRecursive(50))
 }
@@ -405,6 +408,7 @@ func timeTaken(f func(int) int, i int) {
     stop := time.Now()
     fmt.Println(": ", stop.Sub(start))
 }
+
 func main() {
     fmt.Print("\n* Fibonacci Using Recursion")
     timeTaken(fibonacciRecursive, 40)
@@ -415,9 +419,9 @@ func main() {
 ```
 
 ```bash
-  * Fibonacci Using Recursion: 102334155:  634.742717ms
+* Fibonacci Using Recursion: 102334155:  634.742717ms
 
-  * Fibonacci Using Iteration: 102334155:  2.036µs
+* Fibonacci Using Iteration: 102334155:  2.036µs
 ```
 
 ---
@@ -438,7 +442,7 @@ timeTaken(fourTimes, 40)
 ```
 
 ```bash
-`* 4 times in a row: Fibonacci Using Recursion
+* 4 times in a row: Fibonacci Using Recursion
 : 102334155:  599.31207ms
 : 102334155:  659.258468ms
 : 102334155:  631.379041ms
@@ -487,12 +491,12 @@ fmt.Println(": ", stop.Sub(start))
 ```
 
 ```bash
-> * 4 times in a row: Fibonacci Using Iteration And Concurrency
->:  2697763845588227525
->:  2697763845588227525
->:  2697763845588227525
->:  2697763845588227525
->:  4.438340355s
+* 4 times in a row: Fibonacci Using Iteration And Concurrency
+:  2697763845588227525
+:  2697763845588227525
+:  2697763845588227525
+:  2697763845588227525
+:  4.438340355s
 ```
 
 ---
@@ -526,12 +530,10 @@ fmt.Println(": ", stop.Sub(start))
 
 I've annotated the spikes due to the code in red. Notice that the most of the activity is on cores 1 and 3 based on the spikes of green squares. There is barely any action on cores 2 and 4 corresponding to the annotations. My theory is that although we set GOMAXPROCS to the number of CPUs, the go scheduler works differently.
 
-![Activity in CPU Cores](/fib_annotated.png)
+![Activity in CPU Cores](img/fib_annotated.png)
 
-Also see these responses from the FAQ on golang.org:
-
-[Why doesn't my multi-goroutine program use multiple CPUs? ¶](https://golang.org/doc/faq#Why_no_multi_CPU)
-
+Also see these responses from the FAQ on golang.org:\
+[Why doesn't my multi-goroutine program use multiple CPUs?](https://golang.org/doc/faq#Why_no_multi_CPU)\
 [Why does using GOMAXPROCS > 1 sometimes make my program slower?](https://golang.org/doc/faq#Why_GOMAXPROCS)
 
 ---
@@ -595,15 +597,15 @@ func main() {
 Output with 50,000 numbers
 
 ```bash
-> * Selection Sort - Sorted List(50000):  1.907869346s
-> * Selection Sort - Reverse Sorted List(50000):  1.675308716s
+* Selection Sort - Sorted List(50000):  1.907869346s
+* Selection Sort - Reverse Sorted List(50000):  1.675308716s
 ```
 
 Output with 10 numbers
 
 ```bash
-> * Selection Sort - Sorted List(10):  1.03µs
-> * Selection Sort - Reverse Sorted List(10):  778ns
+* Selection Sort - Sorted List(10):  1.03µs
+* Selection Sort - Reverse Sorted List(10):  778ns
 ```
 
 Oddly, the sorted list takes longer than the reverse sorted list. I tried to add a check to avoid unnecessary swaps but that did not help either:
@@ -743,7 +745,7 @@ logger: 2018/02/17 11:23:59 level03.go:45: Time to sort:  1.804838585s
 
 ### Unit Testing
 
-To add unit tests to our sorting algorithms, I `import testing` in a filename that ends with `_test.go`. It stays in the same directory as our source files and run it using `go test -cover src/*`.
+To add unit tests to our sorting algorithms, I `import testing` in a filename that ends with `_test.go`. It stays in the same directory as our source files and I run it using `go test -cover src/*`.
 I passed all the algorithm functions as an array. Note the main `func TestSorting(t *testing.T)` as well as the subsequent `t.Run("Reverse Sorted List", func(t *testing.T)` under it. I've shown how you test the list that is sorted in the descending order. See the source code to see another similar call.
 
 ```golang
@@ -793,7 +795,7 @@ $
 
 ### Benchmarks
 
-Benchmarks follow a similar pattern to unit tests. I id a `cd src` to be in the same folder as the test file and ran `go test -bench .`
+Benchmarks follow a similar pattern to unit tests. I did a `cd src` to be in the same folder as the test file and ran `go test -bench .`
 
 ```golang
 func BenchmarkSelectionSort(b *testing.B) {
@@ -831,5 +833,38 @@ user    0m22.920s
 sys     0m0.359s
 $
 ```
+
+---
+
+### Trace
+
+You can see what happening in your code by creating and viewing a trace file.
+
+```bash
+$ go test src/* -trace=test.out
+ok      command-line-arguments  8.768s
+$ go tool trace test.out
+2018/02/19 23:11:57 Parsing trace...
+2018/02/19 23:11:57 Serializing trace...
+2018/02/19 23:11:57 Splitting trace...
+2018/02/19 23:11:57 Opening browser
+```
+
+![Trace](img/trace.png)
+
+Clicking on the "View trace" link above shows this page
+
+![Trace Procs](img/trace_procs.png)
+
+Clicking on the "Goroutine analysis" link above shows this page
+![Go IDs](img/trace_goroutines.png)
+
+Clicking on "testing.trunner N=7" shows this:
+
+![Timings](img/trace_list.png)
+
+Clicking on the "6" link above shows this
+
+![Go IDs](img/trace_goid.png)
 
 ---
