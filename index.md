@@ -68,7 +68,30 @@ Source Code [/src/level03.go](/src/level03.go)\
 Source Code [/src/level03_test.go](/src/level03_test.go)\
 [Unit Testing](#unit-testing)\
 [Benchmarks](#benchmarks)\
-[Trace](#trace)
+[Trace](#trace)\
+[CPU Profile](#cpu-profile)
+
+[//]: # (memory-profile)
+
+[//]: # (7 common mistakes in Go and when to avoid them by Steve Francia Docker)
+
+[//]: # (https://www.youtube.com/watch?v=29LLRKIL_TI)
+
+[//]: # (Interface)
+
+[//]: # (io.Reader, io.Writer)
+
+[//]: # (io.Reader, io.Writer)
+
+[//]: # (Requiring Broad Interfaces)
+
+[//]: # (Methods vs Functions)
+
+[//]: # (Pointers vs Values)
+
+[//]: # (Errors are not just strings)
+
+[//]: # (Consider Concurrency)
 
 ---
 
@@ -857,6 +880,7 @@ Clicking on the "View trace" link above shows this page
 ![Trace Procs](img/trace_procs.png)
 
 Clicking on the "Goroutine analysis" link above shows this page
+
 ![Go IDs](img/trace_goroutines.png)
 
 Clicking on "testing.trunner N=7" shows this:
@@ -866,5 +890,75 @@ Clicking on "testing.trunner N=7" shows this:
 Clicking on the "6" link above shows this
 
 ![Go IDs](img/trace_goid.png)
+
+---
+
+### CPU Profile
+
+I did a `cd src` to be in the same folder as the test file and ran
+
+```bash
+$ go test -cpuprofile cpu.prof -bench .
+goos: darwin
+goarch: amd64
+BenchmarkSelectionSort/Sorted_List-4                   1        1810042056 ns/op
+BenchmarkSelectionSort/Reverse_Sorted_List-4           1        1637112084 ns/op
+PASS
+ok      _/Users/stan/learn-go/src       12.116s
+```
+
+It looked like this
+```bash
+$ ls -als *.prof
+8 -rw-r--r--  1 stan  staff  1765 Feb 21 21:17 cpu.prof
+```
+
+I visualized it using 
+```bash
+$ go tool pprof cpu.prof
+Type: cpu
+Time: Feb 21, 2018 at 9:17pm (CST)
+Duration: 12.10s, Total samples = 10.26s (84.77%)
+Entering interactive mode (type "help" for commands, "o" for options)
+(pprof)
+```
+
+Now we can type in various commands to see what was going on. For example, typing in `top` give you the top 10. You can also use `top5`, `top20` etc. Here's a sample output that shows our sorting algorithms. Look for "src.selectionSort" etc. in the path :
+
+```bash
+(pprof) top
+Showing nodes accounting for 10.24s, 99.81% of 10.26s total
+Dropped 4 nodes (cum <= 0.05s)
+Showing top 10 nodes out of 26
+      flat  flat%   sum%        cum   cum%
+     5.44s 53.02% 53.02%      5.44s 53.02%  _/Users/stan/learn-go/src.selectionSort /Users/stan/learn-go/src/level03.go
+     2.83s 27.58% 80.60%      2.83s 27.58%  _/Users/stan/learn-go/src.bubbleSort /Users/stan/learn-go/src/level03.go
+     0.97s  9.45% 90.06%      0.97s  9.45%  runtime.usleep /usr/local/Cellar/go/1.9.3/libexec/src/runtime/sys_darwin_amd64.s
+     0.94s  9.16% 99.22%      0.94s  9.16%  _/Users/stan/learn-go/src.insertionSort /Users/stan/learn-go/src/level03.go
+     0.06s  0.58% 99.81%      0.06s  0.58%  runtime.mach_semaphore_signal /usr/local/Cellar/go/1.9.3/libexec/src/runtime/sys_darwin_amd64.s
+         0     0% 99.81%      1.30s 12.67%  _/Users/stan/learn-go/src.BenchmarkSelectionSort.func1 /Users/stan/learn-go/src/level03_test.go
+         0     0% 99.81%      1.25s 12.18%  _/Users/stan/learn-go/src.BenchmarkSelectionSort.func2 /Users/stan/learn-go/src/level03_test.go
+         0     0% 99.81%      1.58s 15.40%  _/Users/stan/learn-go/src.TestSorting.func1 /Users/stan/learn-go/src/level03_test.go
+         0     0% 99.81%      5.09s 49.61%  _/Users/stan/learn-go/src.TestSorting.func2 /Users/stan/learn-go/src/level03_test.go
+         0     0% 99.81%      0.06s  0.58%  runtime.goready /usr/local/Cellar/go/1.9.3/libexec/src/runtime/proc.go
+(pprof)
+```
+
+To see some praphs, install [http://www.graphviz.org/](http://www.graphviz.org/) using homebrew, run pprof again and then type in `png`:
+
+```bash
+$ go tool pprof cpu.prof
+Type: cpu
+Time: Feb 21, 2018 at 9:17pm (CST)
+Duration: 12.10s, Total samples = 10.26s (84.77%)
+Entering interactive mode (type "help" for commands, "o" for options)
+(pprof) png
+Generating report in profile001.png
+(pprof)
+```
+
+Now you have a png image of where the time was spent in the CPU:
+
+![CPU Profile png](img/profile001.png)
 
 ---
