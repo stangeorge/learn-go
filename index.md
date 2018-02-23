@@ -69,7 +69,10 @@ Source Code [/src/level03_test.go](/src/level03_test.go)\
 [Unit Testing](#unit-testing)\
 [Benchmarks](#benchmarks)\
 [Trace](#trace)\
-[CPU Profile](#cpu-profile)
+[CPU Profile](#cpu-profile)\
+[Flame Graph](#flame-graph)
+
+### FURTHER READING
 
 [//]: # (memory-profile)
 
@@ -944,10 +947,11 @@ Showing top 10 nodes out of 26
 (pprof)
 ```
 
-To see some praphs, install [http://www.graphviz.org/](http://www.graphviz.org/) using homebrew, run pprof again and then type in `png`:
+To see some graphs, install [http://www.graphviz.org/](http://www.graphviz.org/) using homebrew, run pprof again and then type in `png`:
 
 ```bash
-$ go tool pprof cpu.prof
+$ brew install graphviz
+$ go tool pprof c   
 Type: cpu
 Time: Feb 21, 2018 at 9:17pm (CST)
 Duration: 12.10s, Total samples = 10.26s (84.77%)
@@ -960,5 +964,50 @@ Generating report in profile001.png
 Now you have a png image of where the time was spent in the CPU:
 
 ![CPU Profile png](img/profile001.png)
+
+---
+
+### Flame Graph
+Install [https://github.com/uber/go-torch](https://github.com/uber/go-torch) along with [https://github.com/brendangregg/FlameGraph](https://github.com/brendangregg/FlameGraph) and [https://github.com/Masterminds/glide](https://github.com/Masterminds/glide)
+
+```bash
+$ export GOPATH=$HOME/go
+$ go get github.com/uber/go-torch
+$ cd $GOPATH/src/github.com/uber/go-torch
+$ git clone https://github.com/brendangregg/FlameGraph.git
+$ go get github.com/Masterminds/glide
+$ $GOPATH/bin/glide install
+$ go test ./...
+ok      github.com/uber/go-torch        0.935s
+ok      github.com/uber/go-torch/pprof  0.485s
+ok      github.com/uber/go-torch/renderer       0.041s
+ok      github.com/uber/go-torch/stack  0.032s
+?       github.com/uber/go-torch/torchlog       [no test files]
+```
+
+Now we can execute:
+
+```bash
+$ cd $HOME/learn-go/src
+$ $GOPATH/bin/go-torch cpu.prof
+$ export PATH=$PATH:$GOPATH/src/github.com/uber/go-torch/FlameGraph/
+$ ./go-torch $HOME/learn-go/src/cpu.prof
+INFO[23:38:54] Run pprof command: go tool pprof -raw -seconds 30 /Users/stan/learn-go/src/cpu.prof
+INFO[23:38:54] Writing svg to torch.svg
+```
+
+![FlameGraph](img/torch.svg)
+
+---
+
+### FURTHER READING
+
+### trace, pprof
+
+Julia Evans: [Profiling Go programs with pprof](https://jvns.ca/blog/2017/09/24/profiling-go-with-pprof/)
+
+JBD: [Custom pprof profiles](https://rakyll.org/custom-profiles/)
+
+Rhys Hiltner: [An Introduction to go tool trace](https://about.sourcegraph.com/go/an-introduction-to-go-tool-trace-rhys-hiltner/)
 
 ---
