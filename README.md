@@ -989,14 +989,17 @@ Now we can execute:
 
 ```bash
 $ cd $HOME/learn-go/src
-$ $GOPATH/bin/go-torch cpu.prof
 $ export PATH=$PATH:$GOPATH/src/github.com/uber/go-torch/FlameGraph/
-$ ./go-torch $HOME/learn-go/src/cpu.prof
+$ $GOPATH/bin/go-torch cpu.prof
 INFO[23:38:54] Run pprof command: go tool pprof -raw -seconds 30 /Users/stan/learn-go/src/cpu.prof
 INFO[23:38:54] Writing svg to torch.svg
 ```
 
 ![FlameGraph](img/torch.svg)
+
+---
+
+### CPU Profile
 
 ---
 
