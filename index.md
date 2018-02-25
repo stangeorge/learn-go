@@ -965,6 +965,12 @@ Now you have a png image of where the time was spent in the CPU:
 
 ![CPU Profile png](img/profile001.png)
 
+Equivalent for standalone code
+
+```golang
+var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
+```
+
 ---
 
 ### Flame Graph
@@ -999,7 +1005,20 @@ INFO[23:38:54] Writing svg to torch.svg
 
 ---
 
-### CPU Profile
+### Memory Profile
+
+Getting the memory profile is similar to getting the CPU Profile
+
+```bash
+$ cd $HOME/learn-go/src
+$ go test -memprofile mem.prof -bench .
+goos: darwin
+goarch: amd64
+BenchmarkSelectionSort/Sorted_List-4                   1        1830594019 ns/op
+BenchmarkSelectionSort/Reverse_Sorted_List-4           1        1601361429 ns/op
+PASS
+ok      _/Users/stan/learn-go/src       12.160s
+```
 
 ---
 
