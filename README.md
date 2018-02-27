@@ -70,11 +70,13 @@ Source Code [/src/level03_test.go](/src/level03_test.go)\
 [Benchmarks](#benchmarks)\
 [Trace](#trace)\
 [CPU Profile](#cpu-profile)\
-[Flame Graph](#flame-graph)
+[Flame Graph](#flame-graph)\
+[Memory Profile](#memory-profile)\
+[Debug an infinite loop](#debug-an-infinite-loop)
+
+[//]: # (debug-using-delve)
 
 ### FURTHER READING
-
-[//]: # (memory-profile)
 
 [//]: # (7 common mistakes in Go and when to avoid them by Steve Francia Docker)
 
@@ -965,6 +967,12 @@ Now you have a png image of where the time was spent in the CPU:
 
 ![CPU Profile png](img/profile001.png)
 
+Equivalent standalone code
+
+```golang
+var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
+```
+
 ---
 
 ### Flame Graph
@@ -999,7 +1007,81 @@ INFO[23:38:54] Writing svg to torch.svg
 
 ---
 
-### CPU Profile
+### Memory Profile
+
+Getting the memory profile is similar to getting the CPU Profile
+
+```bash
+$ cd $HOME/learn-go/src
+$ go test -memprofile mem.prof -bench .
+goos: darwin
+goarch: amd64
+BenchmarkSelectionSort/Sorted_List-4                   1        1830594019 ns/op
+BenchmarkSelectionSort/Reverse_Sorted_List-4           1        1601361429 ns/op
+PASS
+ok      _/Users/stan/learn-go/src       12.160s
+```
+
+Equivalent standalone code
+
+```golang
+var memprofile = flag.String("memprofile", "", "write memory profile to this file")
+```
+---
+
+### Debug an infinite loop
+
+When the code was running, I hit `Ctrl`+`\`. It shows the event as `^\SIGQUIT: quit` below. I can see that it was executing the method `main.selectionSort` in the file level03.go at line 42.
+
+```bash
+$ go run src/level??.go src/learn.go
+logger: 2018/02/26 20:33:50 learn.go:16: * LEVEL 1
+logger: 2018/02/26 20:33:50 learn.go:18: * LEVEL 2
+logger: 2018/02/26 20:33:50 learn.go:20: * LEVEL 3
+logger: 2018/02/26 20:33:50 level03.go:16: *   main.selectionSort - Sorted  Ascending
+logger: 2018/02/26 20:33:52 level03.go:36: Time to sort:  1.748033655s
+logger: 2018/02/26 20:33:52 level03.go:22: *   main.selectionSort - Sorted Descending
+^\SIGQUIT: quit
+PC=0x1098711 m=0 sigcode=0
+
+goroutine 1 [running]:
+main.selectionSort(0xc4200ec000, 0xc350, 0xc350)
+        /Users/stan/learn-go/src/level03.go:42 +0x21 fp=0xc42003fdc8 sp=0xc42003fdb8 pc=0x1098711
+main.sortTime(0x10d0688, 0xc4200ec000, 0xc350, 0xc350)
+        /Users/stan/learn-go/src/level03.go:33 +0x7c fp=0xc42003fe50 sp=0xc42003fdc8 pc=0x109860c
+main.level03()
+        /Users/stan/learn-go/src/level03.go:26 +0x1e3 fp=0xc42003ff20 sp=0xc42003fe50 pc=0x1098423
+main.main()
+        /Users/stan/learn-go/src/learn.go:21 +0x150 fp=0xc42003ff80 sp=0xc42003ff20 pc=0x10989e0
+runtime.main()
+        /usr/local/Cellar/go/1.9.3/libexec/src/runtime/proc.go:195 +0x226 fp=0xc42003ffe0 sp=0xc42003ff80 pc=0x1028a26
+runtime.goexit()
+        /usr/local/Cellar/go/1.9.3/libexec/src/runtime/asm_amd64.s:2337 +0x1 fp=0xc42003ffe8 sp=0xc42003ffe0 pc=0x1050891
+
+rax    0xc350
+rbx    0x94d7
+rcx    0xc4200ec000
+rdx    0x2e79
+rdi    0xafcf
+rsi    0x1381
+rbp    0xc42003fdb8
+rsp    0xc42003fdb8
+r8     0x2e78
+r9     0x94d7
+r10    0x2e7a
+r11    0x246
+r12    0x7d0c6280b79b
+r13    0x0
+r14    0x0
+r15    0x0
+rip    0x1098711
+rflags 0x297
+cs     0x2b
+fs     0x0
+gs     0x0
+exit status 2
+$
+```
 
 ---
 
