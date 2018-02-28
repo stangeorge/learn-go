@@ -72,9 +72,8 @@ Source Code [/src/level03_test.go](/src/level03_test.go)\
 [CPU Profile](#cpu-profile)\
 [Flame Graph](#flame-graph)\
 [Memory Profile](#memory-profile)\
-[Debug an infinite loop](#debug-an-infinite-loop)
-
-[//]: # (debug-using-delve)
+[Debug an infinite loop](#debug-an-infinite-loop)\
+[Debug using Delve](#debug-using-delve)
 
 ### FURTHER READING
 
@@ -1082,6 +1081,97 @@ gs     0x0
 exit status 2
 $
 ```
+
+---
+
+### Debug using Delve
+
+Install [https://github.com/derekparker/delve](#https://github.com/derekparker/delve) 
+
+```bash
+brew install go-delve/delve/delve
+```
+
+Start debugging using
+
+```bash
+$ cd src/
+$ dlv debug .
+Type 'help' for list of commands.
+(dlv)
+```
+
+To set a breakpoint in main, type `break main.main`:
+
+```bash
+(dlv) break main.main
+Breakpoint 1 set at 0x10b5868 for main.main() ./learn.go:14
+(dlv)
+```
+
+To run the code and hit the breakpoint type `continue`. See the `=>` that points to the breakpoint.
+
+```bash
+(dlv) continue
+> main.main() ./learn.go:14 (hits goroutine(1):1 total:1) (PC: 0x10b5868)
+     9: var (
+    10:         buf    bytes.Buffer
+    11:         logger = log.New(&buf, "logger: ", log.Ldate|log.Ltime|log.Lshortfile)
+    12: )
+    13:
+=>  14: func main() {
+    15:         logger.SetOutput(os.Stdout)
+    16:         logger.Println("* LEVEL 1")
+    17:         // level01()
+    18:         logger.Println("* LEVEL 2")
+    19:         // level02()
+(dlv)
+```
+
+Set another breakpoint at the selectionSort method by typing `break main.selectionSort`:
+
+```bash
+(dlv) break main.selectionSort
+Breakpoint 2 set at 0x10b62c0 for main.selectionSort() ./level03.go:39
+(dlv) continue
+logger: 2018/02/27 23:35:17 learn.go:16: * LEVEL 1
+logger: 2018/02/27 23:35:17 learn.go:18: * LEVEL 2
+logger: 2018/02/27 23:35:17 learn.go:20: * LEVEL 3
+logger: 2018/02/27 23:35:17 level03.go:16: *   main.selectionSort - Sorted  Ascending
+> main.selectionSort() ./level03.go:39 (hits goroutine(1):1 total:1) (PC: 0x10b62c0)
+    34:         stop := time.Now()
+    35:         // logger.Printf("(%d) %v AFTER", len(n), n)
+    36:         logger.Println("Time to sort: ", stop.Sub(start))
+    37: }
+    38:
+=>  39: func selectionSort(n []int) {
+    40:         for i := 0; i < len(n); i++ {
+    41:                 min_j, min := i, n[i]
+    42:                 for j := i; j < len(n); j++ {
+    43:                         if n[j] < min {
+    44:                                 min_j, min = j, n[j]
+(dlv)
+```
+
+To single step to the next line type `step`:
+
+```bash
+(dlv) step
+> main.selectionSort() ./level03.go:40 (PC: 0x10b62ce)
+    35:         // logger.Printf("(%d) %v AFTER", len(n), n)
+    36:         logger.Println("Time to sort: ", stop.Sub(start))
+    37: }
+    38:
+    39: func selectionSort(n []int) {
+=>  40:         for i := 0; i < len(n); i++ {
+    41:                 min_j, min := i, n[i]
+    42:                 for j := i; j < len(n); j++ {
+    43:                         if n[j] < min {
+    44:                                 min_j, min = j, n[j]
+    45:                         }
+```
+
+You can see the local variables using `locals`, change the value of a variable using `set` etc. For the complete list of options type `help` and `quit` to exit the debug mode
 
 ---
 
