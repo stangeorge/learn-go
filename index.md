@@ -73,9 +73,8 @@ Source Code [/src/level03_test.go](/src/level03_test.go)\
 [Flame Graph](#flame-graph)\
 [Memory Profile](#memory-profile)\
 [Debug an infinite loop](#debug-an-infinite-loop)\
-[Debug using Delve](#debug-using-delve)
-
-### FURTHER READING
+[Debug using Delve](#debug-using-delve)\
+[Debug in Visual Studio Code](#debug-in-visual-studio-code)
 
 [//]: # (7 common mistakes in Go and when to avoid them by Steve Francia Docker)
 
@@ -1175,6 +1174,16 @@ You can see the local variables using `locals`, change the value of a variable u
 
 ---
 
+### Debug in Visual Studio Code
+
+Once you install Delve as shown above, you can also debug from within VSC. Pick Debug > Start Debugging from the Debug menu. You can set a breakpoint by clicking to the space to the left of the line number.
+
+![Debug in Visual Studio Code](img/debug_vsc.png)
+
+I did not need to fidget around much here. I clicked start debugging and VSC prompted me to install a couple of addons. I did that and debugging was fine. A more detailed installation can be found at: [https://code.visualstudio.com/docs/editor/debugging#_launch-configurations](https://code.visualstudio.com/docs/editor/debugging#_launch-configurations)
+
+---
+
 ### FURTHER READING
 
 ### trace, pprof
@@ -1182,6 +1191,8 @@ You can see the local variables using `locals`, change the value of a variable u
 Julia Evans: [Profiling Go programs with pprof](https://jvns.ca/blog/2017/09/24/profiling-go-with-pprof/)
 
 JBD: [Custom pprof profiles](https://rakyll.org/custom-profiles/)
+
+The Go Blog: [Profiling Go Programs](https://blog.golang.org/profiling-go-programs)
 
 Rhys Hiltner: [An Introduction to go tool trace](https://about.sourcegraph.com/go/an-introduction-to-go-tool-trace-rhys-hiltner/)
 
