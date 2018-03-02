@@ -76,6 +76,10 @@ Source Code [/src/level03_test.go](/src/level03_test.go)\
 [Debug using Delve](#debug-using-delve)\
 [Debug in Visual Studio Code](#debug-in-visual-studio-code)
 
+### LEVEL 5
+
+Source Code [/src/level05.go](/src/level05.go)\
+
 [//]: # (7 common mistakes in Go and when to avoid them by Steve Francia Docker)
 
 [//]: # (https://www.youtube.com/watch?v=29LLRKIL_TI)
