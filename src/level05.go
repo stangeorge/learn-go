@@ -14,17 +14,17 @@ type FileError struct {
 }
 
 //FileNameRequiredError to handle blank file names
-func FileNameRequiredError(message string, file string) *FileError {
+func FileNameRequiredError(file string) *FileError {
 	return &FileError{
-		Message: message,
+		Message: "file name is required",
 		File:    file,
 	}
 }
 
 //FileCreateError to handle error during file creation
-func FileCreateError(message string, file string) *FileError {
+func FileCreateError(file string) *FileError {
 	return &FileError{
-		Message: message,
+		Message: "error creating file",
 		File:    file,
 	}
 }
@@ -36,13 +36,13 @@ func (e *FileError) Error() string {
 // https://golang.org/pkg/os/exec/#example_Command
 func createFile(f string) (err error) {
 	if len(f) == 0 {
-		err = FileNameRequiredError("file name required", f)
+		err = FileNameRequiredError(f)
 	}
 	cmd := exec.Command("touch", f)
 	err = cmd.Run()
 	if err != nil {
-		logger.Fatal(err)
-		return FileCreateError("could not create file", f)
+		// logger.Fatal(err)
+		err = FileCreateError(f)
 	}
 	return err
 }

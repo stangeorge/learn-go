@@ -7,14 +7,19 @@ import (
 
 func TestFiles(t *testing.T) {
 	t.Run("Blank filename check", func(t *testing.T) {
-		err := createFile("")
-		if err == nil {
+		f := ""
+		err := createFile(f)
+		if err == FileNameRequiredError(f) {
 			t.Error("Blank filename error not caught")
 		}
+
+		// if err != FileCreateError(f) {
+		// 	t.Error("Expected")
+		// }
 	})
 
 	t.Run("Create a file", func(t *testing.T) {
-		f := "hello.txt"
+		var f = "hello.txt"
 		err := createFile(f)
 		if err != nil {
 			t.Errorf("Error creating file: %s", f)
