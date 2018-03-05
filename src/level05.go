@@ -1,24 +1,22 @@
 package main
 
 import (
+	"errors"
 	"os/exec"
+)
+
+var (
+	//ErrFileNameRequired to handle blank file names
+	ErrFileNameRequired = errors.New("file name is required")
 )
 
 func level05() {
 }
 
-//FileError to handle errors in file operatoins
+//FileError to handle errors in file operations
 type FileError struct {
 	Message string
 	File    string
-}
-
-//FileNameRequiredError to handle blank file names
-func FileNameRequiredError(file string) *FileError {
-	return &FileError{
-		Message: "file name is required",
-		File:    file,
-	}
 }
 
 //FileCreateError to handle error during file creation
@@ -36,13 +34,14 @@ func (e *FileError) Error() string {
 // https://golang.org/pkg/os/exec/#example_Command
 func createFile(f string) (err error) {
 	if len(f) == 0 {
-		err = FileNameRequiredError(f)
-	}
-	cmd := exec.Command("touch", f)
-	err = cmd.Run()
-	if err != nil {
-		// logger.Fatal(err)
-		err = FileCreateError(f)
+		err = ErrFileNameRequired
+	} else {
+		cmd := exec.Command("touch", f)
+		err = cmd.Run()
+		if err != nil {
+			// logger.Fatal(err)
+			err = FileCreateError(f)
+		}
 	}
 	return err
 }
