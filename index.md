@@ -1188,6 +1188,55 @@ I did not need to fidget around much here. I clicked start debugging and VSC pro
 
 ---
 
+## LEVEL 5 :[/src/level05.go](/src/level05.go), [/src/level05_test.go](/src/level06_test.go)
+
+---
+
+### Error Handling
+
+You can reuse errors using:
+
+```golang
+var (
+    //ErrFileNameRequired to handle blank file names
+    ErrFileNameRequired = errors.New("file name is required")
+)
+
+func createFile(f string) (err error) {
+    if len(f) == 0 {
+        err = ErrFileNameRequired
+    } else {
+        _, err = os.Create(f)
+    }
+    return err
+}
+```
+
+Now write a test for it to see what happens when we provide an invalid filename.
+
+```golang
+func TestFiles(t *testing.T) {
+    t.Run("Blank filename check", func(t *testing.T) {
+        f := ""
+        err := createFile(f)
+        if err != ErrFileNameRequired {
+            t.Error("Blank filename error not caught")
+        }
+    })
+```
+
+Running this test results in 
+
+```bash
+Running tool: /usr/local/bin/go test -timeout 30s -run ^TestFiles$
+
+PASS
+ok  	_/Users/stan/learn-go/src	0.007s
+Success: Tests passed.
+```
+
+---
+
 ### FURTHER READING
 
 ### trace, pprof

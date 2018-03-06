@@ -2,7 +2,7 @@ package main
 
 import (
 	"errors"
-	"os/exec"
+	"os"
 )
 
 var (
@@ -31,17 +31,11 @@ func (e *FileError) Error() string {
 	return e.Message + " " + e.File
 }
 
-// https://golang.org/pkg/os/exec/#example_Command
 func createFile(f string) (err error) {
 	if len(f) == 0 {
 		err = ErrFileNameRequired
 	} else {
-		cmd := exec.Command("touch", f)
-		err = cmd.Run()
-		if err != nil {
-			// logger.Fatal(err)
-			err = FileCreateError(f)
-		}
+		_, err = os.Create(f)
 	}
 	return err
 }
