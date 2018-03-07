@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"testing"
 )
 
@@ -14,10 +15,18 @@ func TestFiles(t *testing.T) {
 	})
 
 	t.Run("Create a file", func(t *testing.T) {
-		var f = "`.txt"
+		var f = "/.txt"
 		err := createFile(f)
+		if err != err.(*FileError) {
+			t.Errorf("Invalid filename error not caught")
+		}
+	})
+
+	t.Run("Extract a 7z file", func(t *testing.T) {
+		var f = os.Getenv("HOME") + "/Downloads/pwned-passwords-update-2.txt.7z"
+		err := extractFile(f)
 		if err != nil {
-			t.Errorf("Error creating file: %s", f)
+			t.Errorf("Error extracting file %s: %s", f, err.Error())
 		}
 	})
 }

@@ -79,6 +79,8 @@ Source Code [/src/level03_test.go](/src/level03_test.go)\
 ### LEVEL 5
 
 Source Code [/src/level05.go](/src/level05.go)\
+[Error Variable](#error-variable)\
+[Error Type](#error-type)
 
 [//]: # (7 common mistakes in Go and when to avoid them by Steve Francia Docker)
 
@@ -1192,7 +1194,7 @@ I did not need to fidget around much here. I clicked start debugging and VSC pro
 
 ---
 
-### Error Handling
+### Error Variable
 
 You can reuse errors using:
 
@@ -1212,7 +1214,7 @@ func createFile(f string) (err error) {
 }
 ```
 
-Now write a test for it to see what happens when we provide an invalid filename.
+A test to verify that a blank filename throws the ErrFileNameRequired.
 
 ```golang
 func TestFiles(t *testing.T) {
@@ -1225,13 +1227,65 @@ func TestFiles(t *testing.T) {
     })
 ```
 
-Running this test results in 
+Running this test results in:
 
 ```bash
 Running tool: /usr/local/bin/go test -timeout 30s -run ^TestFiles$
 
 PASS
-ok  	_/Users/stan/learn-go/src	0.007s
+ok      _/Users/stan/learn-go/src    0.007s
+Success: Tests passed.
+```
+
+---
+
+### Error Type
+
+Following is an example based on PathError in golang:
+
+```golang
+//FileError to handle errors in file operations
+type FileError struct {
+    Message string
+    File    string
+}
+
+func (e *FileError) Error() string {
+    return e.Message + " " + e.Files
+}
+
+func createFile(f string) (err error) {
+    if len(f) == 0 {
+        err = ErrFileNameRequired
+    } else {
+        _, err = os.Create(f)
+        if err != nil {
+            err = &FileError{err.Error(), f}
+        }
+    }
+    return err
+}
+```
+
+A test to verify that an invalid filename throws the ErrFileNameRequired.
+
+```golang
+t.Run("Create a file", func(t *testing.T) {
+        var f = "/.txt"
+        err := createFile(f)
+        if err != err.(*FileError) {
+            t.Errorf("Invalid filename error not caught")
+        }
+    })
+```
+
+Running this test gives:
+
+```bash
+Running tool: /usr/local/bin/go test -timeout 30s -run ^TestFiles$
+
+PASS
+ok  	_/Users/stan/learn-go/src	0.012s
 Success: Tests passed.
 ```
 
