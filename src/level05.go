@@ -36,11 +36,11 @@ func createFile(f string) (err error) {
 	return err
 }
 
-func extractFile(f string) (err error) {
+func extractFile(dir string, f string) (err error) {
 	if len(f) == 0 {
 		err = ErrFileNameRequired
 	} else {
-		cmd := exec.Command("7z", "x", f)
+		cmd := exec.Command("7z", "x", dir+f, "-o"+dir)
 		err = cmd.Run()
 		if err != nil {
 			err = &FileError{err.Error(), f}

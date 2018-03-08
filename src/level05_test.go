@@ -23,10 +23,11 @@ func TestFiles(t *testing.T) {
 	})
 
 	t.Run("Extract a 7z file", func(t *testing.T) {
-		var f = os.Getenv("HOME") + "/Downloads/pwned-passwords-update-2.txt.7z"
-		err := extractFile(f)
+		var dir = os.Getenv("HOME") + "/Downloads/"
+		var f = "pwned-passwords-update-2.txt.7z"
+		err := extractFile(dir, f)
 		if err != nil {
-			t.Errorf("Error extracting file %s: %s", f, err.Error())
+			t.Errorf("Error extracting file %s: %s", dir+f, err.Error())
 		}
 	})
 }

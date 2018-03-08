@@ -80,7 +80,8 @@ Source Code [/src/level03_test.go](/src/level03_test.go)\
 
 Source Code [/src/level05.go](/src/level05.go)\
 [Error Variable](#error-variable)\
-[Error Type](#error-type)
+[Error Type](#error-type)\
+[Execute OS Commands](#execute-os-commands)
 
 [//]: # (7 common mistakes in Go and when to avoid them by Steve Francia Docker)
 
@@ -1285,8 +1286,64 @@ Running this test gives:
 Running tool: /usr/local/bin/go test -timeout 30s -run ^TestFiles$
 
 PASS
-ok  	_/Users/stan/learn-go/src	0.012s
+ok      _/Users/stan/learn-go/src    0.012s
 Success: Tests passed.
+```
+
+---
+
+### Execute OS Commands
+
+Lets try to unzip a 7z file. Install p7zip using
+
+```bash
+$ brew install p7zip
+```
+
+One way to unzip a file is via the terminal using the command:
+
+```bash
+7z x pwned-passwords-update-2.txt.7z
+```
+
+To run this via go, we write this code:
+
+```golang
+func extractFile(dir string, f string) (err error) {
+    if len(f) == 0 {
+        err = ErrFileNameRequired
+    } else {
+        cmd := exec.Command("7z", "x", dir+f, "-o"+dir)
+        err = cmd.Run()
+        if err != nil {
+            err = &FileError{err.Error(), f}
+        }
+    }
+    return err
+}
+```
+
+I am using an 8MB file by Troy Hunt from [https://haveibeenpwned.com/](https://haveibeenpwned.com/)
+to test this. The following test will extract the zipped file from Downloads back into the same directory.
+
+``` golang
+t.Run("Extract a 7z file", func(t *testing.T) {
+        var dir = os.Getenv("HOME") + "/Downloads/"
+        var f = "pwned-passwords-update-2.txt.7z"
+        err := extractFile(dir, f)
+        if err != nil {
+            t.Errorf("Error extracting file %s: %s", dir+f, err.Error())
+        }
+    })
+```
+
+The first 3 lines in the extracted file looks like this:
+
+```bash
+$ head -3  $HOME/Downloads/pwned-passwords-update-2.txt
+0000363AF51392C9C15E5B93924DBF720F30FF85
+000039E7065D98862742CF12544B10C1C262519A
+0000BA996ED92A2EEA1DDD7AD886EA64295C0F51
 ```
 
 ---
