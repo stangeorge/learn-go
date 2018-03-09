@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"errors"
 	"os"
 	"os/exec"
@@ -47,4 +48,22 @@ func extractFile(dir string, f string) (err error) {
 		}
 	}
 	return err
+}
+
+func countLines(dir string, f string) (i int, err error) {
+	if len(f) == 0 {
+		err = ErrFileNameRequired
+	} else {
+		fin, err := os.Open(dir + f)
+		if err != nil {
+			err = &FileError{err.Error(), f}
+		}
+		defer fin.Close()
+
+		scanner := bufio.NewScanner(fin)
+		for scanner.Scan() {
+			i++
+		}
+	}
+	return i, err
 }

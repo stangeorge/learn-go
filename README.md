@@ -81,7 +81,8 @@ Source Code [/src/level03_test.go](/src/level03_test.go)\
 Source Code [/src/level05.go](/src/level05.go)\
 [Error Variable](#error-variable)\
 [Error Type](#error-type)\
-[Execute OS Commands](#execute-os-commands)
+[Execute OS Commands](#execute-os-commands)\
+[Read a File](#read-a-file)
 
 [//]: # (7 common mistakes in Go and when to avoid them by Steve Francia Docker)
 
@@ -1344,6 +1345,53 @@ $ head -3  $HOME/Downloads/pwned-passwords-update-2.txt
 0000363AF51392C9C15E5B93924DBF720F30FF85
 000039E7065D98862742CF12544B10C1C262519A
 0000BA996ED92A2EEA1DDD7AD886EA64295C0F51
+```
+
+---
+
+### Read a File
+
+Lets count and verify that there are 399,790 lines in the file we extracted.
+
+```golang
+func countLines(dir string, f string) (i int, err error) {
+    if len(f) == 0 {
+        err = ErrFileNameRequired
+    } else {
+        fin, err := os.Open(dir + f)
+        if err != nil {
+            err = &FileError{err.Error(), f}
+        }
+        defer fin.Close()
+
+        scanner := bufio.NewScanner(fin)
+        for scanner.Scan() {
+            i++
+        }
+    }
+    return i, err
+}
+```
+
+Lets test it using this:
+
+```golang
+    t.Run("Count lines in a file", func(t *testing.T) {
+        var dir = os.Getenv("HOME") + "/Downloads/"
+        var f = "pwned-passwords-update-2.txt"
+        n, err := countLines(dir, f)
+        if err != nil {
+            t.Errorf("Error extracting file %s: %s", dir+f, err.Error())
+        }
+        count := 399790
+
+        if n != count {
+            t.Errorf("Expected %d lines but counted only %d", count, n)
+        }
+
+        //Cleanup the extracted file
+        os.Remove(dir + f)
+    })
 ```
 
 ---
