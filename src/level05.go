@@ -67,3 +67,31 @@ func countLines(dir string, f string) (i int, err error) {
 	}
 	return i, err
 }
+
+func countPrefix(dir string, f string, n int) (s string, i int, err error) {
+	var m map[string]int
+	var prefix = ""
+	var max = 0
+
+	if len(f) == 0 {
+		err = ErrFileNameRequired
+	} else {
+		fin, err := os.Open(dir + f)
+		if err != nil {
+			err = &FileError{err.Error(), f}
+		}
+		defer fin.Close()
+
+		scanner := bufio.NewScanner(fin)
+		m = make(map[string]int)
+		for scanner.Scan() {
+			p := scanner.Text()[0:n]
+			m[p] = m[p] + 1
+			if m[p] > max {
+				max = m[p]
+				prefix = p
+			}
+		}
+	}
+	return prefix, max, err
+}

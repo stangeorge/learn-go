@@ -82,7 +82,8 @@ Source Code [/src/level05.go](/src/level05.go)\
 [Error Variable](#error-variable)\
 [Error Type](#error-type)\
 [Execute OS Commands](#execute-os-commands)\
-[Read a File](#read-a-file)
+[Read a File](#read-a-file)\
+[Map to count prefixes](#map-to-count-prefixes)
 
 [//]: # (7 common mistakes in Go and when to avoid them by Steve Francia Docker)
 
@@ -1391,6 +1392,63 @@ Lets test it using this:
 
         //Cleanup the extracted file
         os.Remove(dir + f)
+    })
+```
+
+---
+
+### Map to count prefixes
+
+Let's read all password prefix  and count the one that occurs most
+
+```golang
+func countPrefix(dir string, f string, n int) (s string, i int, err error) {
+    var m map[string]int
+    var prefix = ""
+    var max = 0
+
+    if len(f) == 0 {
+        err = ErrFileNameRequired
+    } else {
+        fin, err := os.Open(dir + f)
+        if err != nil {
+            err = &FileError{err.Error(), f}
+        }
+        defer fin.Close()
+
+        scanner := bufio.NewScanner(fin)
+        m = make(map[string]int)
+        for scanner.Scan() {
+            p := scanner.Text()[0:n]
+            m[p] = m[p] + 1
+            if m[p] > max {
+                max = m[p]
+                prefix = p
+            }
+        }
+    }
+    return prefix, max, err
+}
+```
+
+And test it using this:
+
+```golang
+t.Run("Get the prefix that occurs the most number of time", func(t *testing.T) {
+        var dir = os.Getenv("HOME") + "/Downloads/"
+        var f = "pwned-passwords-update-2.txt"
+
+        p, n, err := countPrefix(dir, f, 5)
+        if err != nil {
+            t.Errorf("Error extracting file %s: %s", dir+f, err.Error())
+        }
+
+        prefix := "36DC1"
+        count := 6
+
+        if n != count || p != prefix {
+            t.Errorf("Expected %s to occur %d times", p, n)
+        }
     })
 ```
 

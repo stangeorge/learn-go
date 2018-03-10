@@ -24,9 +24,12 @@ func TestFiles(t *testing.T) {
 
 	t.Run("Extract a 7z file", func(t *testing.T) {
 		var dir = os.Getenv("HOME") + "/Downloads/"
-		var f = "pwned-passwords-update-2.txt.7z"
+		var f = "pwned-passwords-update-2.txt"
 
-		err := extractFile(dir, f)
+		//Cleanup the extracted file
+		os.Remove(dir + f)
+
+		err := extractFile(dir, f+".7z")
 		if err != nil {
 			t.Errorf("Error extracting file %s: %s", dir+f, err.Error())
 		}
@@ -36,6 +39,7 @@ func TestFiles(t *testing.T) {
 	t.Run("Count lines in a file", func(t *testing.T) {
 		var dir = os.Getenv("HOME") + "/Downloads/"
 		var f = "pwned-passwords-update-2.txt"
+
 		n, err := countLines(dir, f)
 		if err != nil {
 			t.Errorf("Error extracting file %s: %s", dir+f, err.Error())
@@ -45,8 +49,22 @@ func TestFiles(t *testing.T) {
 		if n != count {
 			t.Errorf("Expected %d lines but counted only %d", count, n)
 		}
+	})
 
-		//Cleanup the extracted file
-		os.Remove(dir + f)
+	t.Run("Get the prefix that occurs the most number of time", func(t *testing.T) {
+		var dir = os.Getenv("HOME") + "/Downloads/"
+		var f = "pwned-passwords-update-2.txt"
+
+		p, n, err := countPrefix(dir, f, 5)
+		if err != nil {
+			t.Errorf("Error extracting file %s: %s", dir+f, err.Error())
+		}
+
+		prefix := "36DC1"
+		count := 6
+
+		if n != count || p != prefix {
+			t.Errorf("Expected %s to occur %d times", p, n)
+		}
 	})
 }
