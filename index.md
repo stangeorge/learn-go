@@ -83,7 +83,8 @@ Source Code [/src/level05.go](/src/level05.go)\
 [Error Type](#error-type)\
 [Execute OS Commands](#execute-os-commands)\
 [Read a File](#read-a-file)\
-[Map to count prefixes](#map-to-count-prefixes)
+[Sort the prefixes](#sort-the-prefixess)
+
 
 [//]: # (7 common mistakes in Go and when to avoid them by Steve Francia Docker)
 
@@ -1451,6 +1452,10 @@ t.Run("Get the prefix that occurs the most number of time", func(t *testing.T) {
         }
     })
 ```
+
+---
+
+### Sort the prefixes
 
 ---
 

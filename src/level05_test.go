@@ -67,4 +67,15 @@ func TestFiles(t *testing.T) {
 			t.Errorf("Expected %s to occur %d times", p, n)
 		}
 	})
+
+	t.Run("Group prefixes", func(t *testing.T) {
+		var dir = os.Getenv("HOME") + "/Downloads/"
+		var f = "pwned-passwords-update-2.txt"
+
+		m, err := groupPrefix(dir, f, 5)
+		if err != nil || len(m) != 332324 {
+			t.Errorf("Error grouping prefixes for file %s: %s", dir+f, err.Error())
+		}
+
+	})
 }
