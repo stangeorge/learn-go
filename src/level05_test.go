@@ -60,10 +60,10 @@ func TestFiles(t *testing.T) {
 			t.Errorf("Error extracting file %s: %s", dir+f, err.Error())
 		}
 
-		prefix := "36DC1"
+		expected := "36DC1"
 		count := 6
 
-		if n != count || p != prefix {
+		if n != count || p != expected {
 			t.Errorf("Expected %s to occur %d times", p, n)
 		}
 	})
@@ -73,7 +73,22 @@ func TestFiles(t *testing.T) {
 		var f = "pwned-passwords-update-2.txt"
 
 		m, err := groupPrefix(dir, f, 5)
-		if err != nil || len(m) != 332324 {
+		expected := 332324
+		if err != nil || len(m) != expected {
+			t.Errorf("Error grouping prefixes for file %s: %s", dir+f, err.Error())
+		}
+
+	})
+
+	t.Run("Sort prefixes", func(t *testing.T) {
+		var dir = os.Getenv("HOME") + "/Downloads/"
+		var f = "pwned-passwords-update-2.txt"
+
+		p, err := sortPrefix(dir, f, 5)
+		// expected := {"A1C8A", "36DC1", "F30EC"}
+		check := p[0].Value == 6 && p[1].Value == 6 && p[2].Value == 6 && p[3].Value == 5
+
+		if err != nil || !check {
 			t.Errorf("Error grouping prefixes for file %s: %s", dir+f, err.Error())
 		}
 

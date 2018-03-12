@@ -83,8 +83,7 @@ Source Code [/src/level05.go](/src/level05.go)\
 [Error Type](#error-type)\
 [Execute OS Commands](#execute-os-commands)\
 [Read a File](#read-a-file)\
-[Sort the prefixes](#sort-the-prefixess)
-
+[Sort the prefixes](#sort-the-prefixes)
 
 [//]: # (7 common mistakes in Go and when to avoid them by Steve Francia Docker)
 
@@ -108,7 +107,7 @@ Source Code [/src/level05.go](/src/level05.go)\
 
 ---
 
-## LEVEL 1: [/src/level01.go](/src/level01.go)  
+## LEVEL 1: [/src/level01.go](/src/level01.go)
 
 ---
 
@@ -921,12 +920,14 @@ ok      _/Users/stan/learn-go/src       12.116s
 ```
 
 It looked like this
+
 ```bash
 $ ls -als *.prof
 8 -rw-r--r--  1 stan  staff  1765 Feb 21 21:17 cpu.prof
 ```
 
-I visualized it using 
+I visualized it using
+
 ```bash
 $ go tool pprof cpu.prof
 Type: cpu
@@ -961,7 +962,7 @@ To see some graphs, install [http://www.graphviz.org/](http://www.graphviz.org/)
 
 ```bash
 $ brew install graphviz
-$ go tool pprof c   
+$ go tool pprof c
 Type: cpu
 Time: Feb 21, 2018 at 9:17pm (CST)
 Duration: 12.10s, Total samples = 10.26s (84.77%)
@@ -984,6 +985,7 @@ var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
 ---
 
 ### Flame Graph
+
 Install [https://github.com/uber/go-torch](https://github.com/uber/go-torch) along with [https://github.com/brendangregg/FlameGraph](https://github.com/brendangregg/FlameGraph) and [https://github.com/Masterminds/glide](https://github.com/Masterminds/glide)
 
 ```bash
@@ -1035,6 +1037,7 @@ Equivalent standalone code
 ```golang
 var memprofile = flag.String("memprofile", "", "write memory profile to this file")
 ```
+
 ---
 
 ### Debug an infinite loop
@@ -1095,7 +1098,7 @@ $
 
 ### Debug using Delve
 
-Install [https://github.com/derekparker/delve](#https://github.com/derekparker/delve) 
+Install [https://github.com/derekparker/delve](#https://github.com/derekparker/delve)
 
 ```bash
 brew install go-delve/delve/delve
@@ -1300,13 +1303,13 @@ Success: Tests passed.
 Lets try to unzip a 7z file. Install p7zip using
 
 ```bash
-$ brew install p7zip
+brew install p7zip
 ```
 
 One way to unzip a file is via the terminal using the command:
 
 ```bash
-7z x pwned-passwords-update-2.txt.7z
+$7z x pwned-passwords-update-2.txt.7z
 ```
 
 To run this via go, we write this code:
@@ -1456,6 +1459,79 @@ t.Run("Get the prefix that occurs the most number of time", func(t *testing.T) {
 ---
 
 ### Sort the prefixes
+
+Say we want to sort the prefixes starting with the most occuring ones. We need to create a map to group them by count. Then we sort the counts corresponding to the prefixes.
+
+First we group them by count using
+
+```golang
+func groupPrefix(dir string, f string, n int) (m map[string]int, err error) {
+    if len(f) == 0 {
+        err = ErrFileNameRequired
+    } else {
+        fin, err := os.Open(dir + f)
+        if err != nil {
+            err = &FileError{err.Error(), f}
+        }
+        defer fin.Close()
+
+        scanner := bufio.NewScanner(fin)
+        m = make(map[string]int)
+        for scanner.Scan() {
+            p := scanner.Text()[0:n]
+            m[p] = m[p] + 1
+        }
+    }
+    return m, err
+}
+```
+
+I have the sort example based on a 2011 response from Andrew Gerrand. First, we prepare the sort interface:
+
+```golang
+//PairList :A slice of Pairs that implements sort.Interface to sort by Value.
+type PairList []Pair
+
+func (p PairList) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
+func (p PairList) Len() int           { return len(p) }
+func (p PairList) Less(i, j int) bool { return p[i].Value < p[j].Value }
+```
+
+Once we have the sort interface ready, we can use it as below:
+
+```golang
+//https://groups.google.com/d/msg/golang-nuts/FT7cjmcL7gw/Gj4_aEsE_IsJ
+func sortPrefix(dir string, f string, n int) (PairList, error) {
+    var m, err = groupPrefix(dir, f, n)
+
+    p := make(PairList, len(m))
+    i := 0
+    for k, v := range m {
+        p[i] = Pair{k, v}
+        i++
+    }
+    sort.Sort(sort.Reverse(p))
+    return p, err
+}
+```
+
+This returns the top 3 prefixes ("A1C8A", "36DC1", "F30EC") that occur 6 times each. This is followed by prefixes that occur 5 times and so on. We can test this using:
+
+```golang
+t.Run("Sort prefixes", func(t *testing.T) {
+        var dir = os.Getenv("HOME") + "/Downloads/"
+        var f = "pwned-passwords-update-2.txt"
+
+        p, err := sortPrefix(dir, f, 5)
+        // expected := {"A1C8A", "36DC1", "F30EC"}
+        check := p[0].Value == 6 && p[1].Value == 6 && p[2].Value == 6 && p[3].Value == 5
+
+        if err != nil || !check {
+            t.Errorf("Error grouping prefixes for file %s: %s", dir+f, err.Error())
+        }
+
+    })
+```
 
 ---
 
