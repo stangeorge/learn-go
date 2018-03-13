@@ -143,3 +143,15 @@ func sortPrefix(dir string, f string, n int) (PairList, error) {
 	sort.Sort(sort.Reverse(p))
 	return p, err
 }
+
+func findMedian(dir string, f string, n int) {
+	p, err := sortPrefix(dir, f, 5)
+	if err != nil {
+		logger.Printf("Unable to sort")
+	}
+	//Make a slice out of p.Value
+	values := make([]int, 0, len(p))
+	for _, v := range p {
+		values = append(values, v.Value)
+	}
+}
