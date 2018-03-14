@@ -83,7 +83,8 @@ Source Code [/src/level05.go](/src/level05.go)\
 [Error Type](#error-type)\
 [Execute OS Commands](#execute-os-commands)\
 [Read a File](#read-a-file)\
-[Sort the prefixes](#sort-the-prefixes)
+[Sort the prefixes](#sort-the-prefixes)\
+[Find mean and median](#find-mean-and-median)
 
 [//]: # (7 common mistakes in Go and when to avoid them by Steve Francia Docker)
 
@@ -1278,12 +1279,12 @@ A test to verify that an invalid filename throws the ErrFileNameRequired.
 
 ```golang
 t.Run("Create a file", func(t *testing.T) {
-        var f = "/.txt"
-        err := createFile(f)
-        if err != err.(*FileError) {
-            t.Errorf("Invalid filename error not caught")
-        }
-    })
+    var f = "/.txt"
+    err := createFile(f)
+    if err != err.(*FileError) {
+        t.Errorf("Invalid filename error not caught")
+    }
+})
 ```
 
 Running this test gives:
@@ -1334,13 +1335,13 @@ to test this. The following test will extract the zipped file from Downloads bac
 
 ``` golang
 t.Run("Extract a 7z file", func(t *testing.T) {
-        var dir = os.Getenv("HOME") + "/Downloads/"
-        var f = "pwned-passwords-update-2.txt.7z"
-        err := extractFile(dir, f)
-        if err != nil {
-            t.Errorf("Error extracting file %s: %s", dir+f, err.Error())
-        }
-    })
+    var dir = os.Getenv("HOME") + "/Downloads/"
+    var f = "pwned-passwords-update-2.txt.7z"
+    err := extractFile(dir, f)
+    if err != nil {
+        t.Errorf("Error extracting file %s: %s", dir+f, err.Error())
+    }
+})
 ```
 
 The first 3 lines in the extracted file looks like this:
@@ -1381,22 +1382,22 @@ func countLines(dir string, f string) (i int, err error) {
 Lets test it using this:
 
 ```golang
-    t.Run("Count lines in a file", func(t *testing.T) {
-        var dir = os.Getenv("HOME") + "/Downloads/"
-        var f = "pwned-passwords-update-2.txt"
-        n, err := countLines(dir, f)
-        if err != nil {
-            t.Errorf("Error extracting file %s: %s", dir+f, err.Error())
-        }
-        count := 399790
+t.Run("Count lines in a file", func(t *testing.T) {
+    var dir = os.Getenv("HOME") + "/Downloads/"
+    var f = "pwned-passwords-update-2.txt"
+    n, err := countLines(dir, f)
+    if err != nil {
+        t.Errorf("Error extracting file %s: %s", dir+f, err.Error())
+    }
+    count := 399790
 
-        if n != count {
-            t.Errorf("Expected %d lines but counted only %d", count, n)
-        }
+    if n != count {
+        t.Errorf("Expected %d lines but counted only %d", count, n)
+    }
 
-        //Cleanup the extracted file
-        os.Remove(dir + f)
-    })
+    //Cleanup the extracted file
+    os.Remove(dir + f)
+})
 ```
 
 ---
@@ -1439,21 +1440,21 @@ And test it using this:
 
 ```golang
 t.Run("Get the prefix that occurs the most number of time", func(t *testing.T) {
-        var dir = os.Getenv("HOME") + "/Downloads/"
-        var f = "pwned-passwords-update-2.txt"
+    var dir = os.Getenv("HOME") + "/Downloads/"
+    var f = "pwned-passwords-update-2.txt"
 
-        p, n, err := countPrefix(dir, f, 5)
-        if err != nil {
-            t.Errorf("Error extracting file %s: %s", dir+f, err.Error())
-        }
+    p, n, err := countPrefix(dir, f, 5)
+    if err != nil {
+        t.Errorf("Error extracting file %s: %s", dir+f, err.Error())
+    }
 
-        prefix := "36DC1"
-        count := 6
+    prefix := "36DC1"
+    count := 6
 
-        if n != count || p != prefix {
-            t.Errorf("Expected %s to occur %d times", p, n)
-        }
-    })
+    if n != count || p != prefix {
+        t.Errorf("Expected %s to occur %d times", p, n)
+    }
+})
 ```
 
 ---
@@ -1519,18 +1520,65 @@ This returns the top 3 prefixes ("A1C8A", "36DC1", "F30EC") that occur 6 times e
 
 ```golang
 t.Run("Sort prefixes", func(t *testing.T) {
-        var dir = os.Getenv("HOME") + "/Downloads/"
-        var f = "pwned-passwords-update-2.txt"
+    var dir = os.Getenv("HOME") + "/Downloads/"
+    var f = "pwned-passwords-update-2.txt"
 
-        p, err := sortPrefix(dir, f, 5)
-        // expected := {"A1C8A", "36DC1", "F30EC"}
-        check := p[0].Value == 6 && p[1].Value == 6 && p[2].Value == 6 && p[3].Value == 5
+    p, err := sortPrefix(dir, f, 5)
+    // expected := {"A1C8A", "36DC1", "F30EC"}
+    check := p[0].Value == 6 && p[1].Value == 6 && p[2].Value == 6 && p[3].Value == 5
 
-        if err != nil || !check {
-            t.Errorf("Error grouping prefixes for file %s: %s", dir+f, err.Error())
-        }
+    if err != nil || !check {
+        t.Errorf("Error grouping prefixes for file %s: %s", dir+f, err.Error())
+    }
 
-    })
+})
+```
+
+---
+
+### Find mean and median
+
+We can use the count of values to find the mean. The sorting helps us find the median.
+
+```golang
+func findMeanMedian(dir string, f string, n int) (mean float64, median float64, err error) {
+    p, err := sortPrefix(dir, f, 5)
+    if err != nil {
+        logger.Printf("Unable to sort")
+    }
+    //Make a slice out of p.Value
+    sum := 0
+    values := make([]int, 0, len(p))
+    for _, v := range p {
+        values = append(values, v.Value)
+        sum += v.Value
+    }
+
+    l := len(values)
+    mean = float64(sum) / float64(l)
+
+    if l%2 == 0 {
+        median = float64(values[l/2])
+    } else {
+        median = float64(values[l/2-1]+values[l/2-1]) / 2
+    }
+    return mean, median, err
+}
+```
+
+Now we can test it using:
+
+```golang
+t.Run("Median", func(t *testing.T) {
+    var dir = os.Getenv("HOME") + "/Downloads/"
+    var f = "pwned-passwords-update-2.txt"
+
+    mean, median, err := findMeanMedian(dir, f, 5)
+    if err != nil || mean != 1.203012722523802 || median != 1 {
+        t.Errorf("Error finding median in file %s: %s", dir+f, err.Error())
+    }
+
+})
 ```
 
 ---

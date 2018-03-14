@@ -93,4 +93,15 @@ func TestFiles(t *testing.T) {
 		}
 
 	})
+
+	t.Run("Median", func(t *testing.T) {
+		var dir = os.Getenv("HOME") + "/Downloads/"
+		var f = "pwned-passwords-update-2.txt"
+
+		mean, median, err := findMeanMedian(dir, f, 5)
+		if err != nil || mean != 1.203012722523802 || median != 1 {
+			t.Errorf("Error finding median in file %s: %s", dir+f, err.Error())
+		}
+
+	})
 }

@@ -144,14 +144,26 @@ func sortPrefix(dir string, f string, n int) (PairList, error) {
 	return p, err
 }
 
-func findMedian(dir string, f string, n int) {
+func findMeanMedian(dir string, f string, n int) (mean float64, median float64, err error) {
 	p, err := sortPrefix(dir, f, 5)
 	if err != nil {
 		logger.Printf("Unable to sort")
 	}
 	//Make a slice out of p.Value
+	sum := 0
 	values := make([]int, 0, len(p))
 	for _, v := range p {
 		values = append(values, v.Value)
+		sum += v.Value
 	}
+
+	l := len(values)
+	mean = float64(sum) / float64(l)
+
+	if l%2 == 0 {
+		median = float64(values[l/2])
+	} else {
+		median = float64(values[l/2-1]+values[l/2-1]) / 2
+	}
+	return mean, median, err
 }
