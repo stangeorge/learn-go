@@ -1,31 +1,16 @@
 # Learn Go
 
-Learning the Go language by building over simple examples **(Work In Progress)**
-
-## SETUP
-
-Installing go on macOS
-
-```bash
-brew update
-brew upgrade
-brew install go --cross-compile-common
-```
-
-To run the examples here:
-
-```bash
-git clone https://github.com/stangeorge/learn-go.git
-go run learn-go/src/*.go
-```
-
-Change prompt to just $ using: `export PS1="$ "`
+I am learning the Go language by building over simple examples **(Work In Progress)**
 
 ---
 
 ## Table of Contents
 
 ---
+
+### SETUP
+[Installing go on macOS](#installing-go-on-macos)
+
 
 ### LEVEL 1
 
@@ -90,21 +75,26 @@ Source Code [/src/level05.go](/src/level05.go)\
 
 [//]: # (https://www.youtube.com/watch?v=29LLRKIL_TI)
 
-[//]: # (Interface)
+---
 
-[//]: # (io.Reader, io.Writer)
+## SETUP
 
-[//]: # (io.Reader, io.Writer)
+### Installing go on macOS
 
-[//]: # (Requiring Broad Interfaces)
+```bash
+brew update
+brew upgrade
+brew install go --cross-compile-common
+```
 
-[//]: # (Methods vs Functions)
+To run the examples here:
 
-[//]: # (Pointers vs Values)
+```bash
+git clone https://github.com/stangeorge/learn-go.git
+go run learn-go/src/*.go
+```
 
-[//]: # (Errors are not just strings)
-
-[//]: # (Consider Concurrency)
+Change prompt to just $ using: `export PS1="$ "`
 
 ---
 
