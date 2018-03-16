@@ -69,7 +69,8 @@ Source Code [/src/level05.go](/src/level05.go)\
 [Execute OS Commands](#execute-os-commands)\
 [Read a File](#read-a-file)\
 [Sort the prefixes](#sort-the-prefixes)\
-[Find mean and median](#find-mean-and-median)
+[Find mean and median](#find-mean-and-median)\
+[Text Templates](#text-templates)
 
 [//]: # (7 common mistakes in Go and when to avoid them by Steve Francia Docker)
 
@@ -1568,6 +1569,40 @@ t.Run("Median", func(t *testing.T) {
         t.Errorf("Error finding median in file %s: %s", dir+f, err.Error())
     }
 
+})
+```
+
+---
+
+### Text Templates
+
+This is an example of passing in an array to a template to print it out. In this case I want to print the contents of an array in my sample template. I create `tmpl`, then `Parse` and `Execute` it by providing an array.
+
+```golang
+func textTemplate(s string, p []Pair) (string, error) {
+    tmpl := s + `{{range .}}{{.Value}}, {{end}}`
+    b = new(bytes.Buffer)
+    t, err := template.New("").Parse(tmpl)
+    err = t.Execute(b, p)
+    return b.String(), err
+}
+```
+
+Test this using:
+
+```golang
+t.Run("Text Template", func(t *testing.T) {
+    var dir = os.Getenv("HOME") + "/Downloads/"
+    var f = "pwned-passwords-update-2.txt"
+
+    p, err := sortPrefix(dir, f, 5)
+
+    x, err := textTemplate("Top 5 prefix counts are: ", p[:5])
+    expected := "Top 5 prefix counts are: 6, 6, 6, 5, 5, "
+
+    if err != nil || x != expected {
+        t.Errorf("Error grouping prefixes for file %s: %s", dir+f, err.Error())
+    }
 })
 ```
 

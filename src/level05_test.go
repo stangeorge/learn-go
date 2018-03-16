@@ -104,4 +104,18 @@ func TestFiles(t *testing.T) {
 		}
 
 	})
+
+	t.Run("Text Template", func(t *testing.T) {
+		var dir = os.Getenv("HOME") + "/Downloads/"
+		var f = "pwned-passwords-update-2.txt"
+
+		p, err := sortPrefix(dir, f, 5)
+
+		x, err := textTemplate("Top 5 prefix counts are: ", p[:5])
+		expected := "Top 5 prefix counts are: 6, 6, 6, 5, 5, "
+
+		if err != nil || x != expected {
+			t.Errorf("Error grouping prefixes for file %s: %s", dir+f, err.Error())
+		}
+	})
 }

@@ -2,7 +2,9 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"errors"
+	"html/template"
 	"os"
 	"os/exec"
 	"sort"
@@ -166,4 +168,12 @@ func findMeanMedian(dir string, f string, n int) (mean float64, median float64, 
 		median = float64(values[l/2-1]+values[l/2-1]) / 2
 	}
 	return mean, median, err
+}
+
+func textTemplate(s string, p []Pair) (string, error) {
+	tmpl := s + `{{range .}}{{.Value}}, {{end}}`
+	b := new(bytes.Buffer)
+	t, err := template.New("").Parse(tmpl)
+	err = t.Execute(b, p)
+	return b.String(), err
 }
