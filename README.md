@@ -1606,6 +1606,8 @@ t.Run("Text Template", func(t *testing.T) {
 })
 ```
 
+Similar to `text/template` is the `html/template`. This that produces safe and escaped HTML.
+
 ---
 
 ### FURTHER READING
